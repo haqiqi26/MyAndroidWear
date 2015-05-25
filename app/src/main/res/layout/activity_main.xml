@@ -1,0 +1,78 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@drawable/background">
+
+    <RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="false">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please Login Below"
+        android:layout_marginBottom="50dp"
+        android:layout_marginTop="100dp"
+        android:textColor="#FFFFFF"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:id="@+id/loginSign"
+    />
+
+    <EditText
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/userName"
+        android:hint="Enter Username"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:textColor="#ffffff"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_below="@id/loginSign"
+        android:padding="18dp"
+        android:background="@drawable/rounded_corner"
+        android:textColorHint="#bbbbbb"
+        android:textCursorDrawable="@null"
+        />
+
+    <EditText
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:id="@+id/userPass"
+        android:typeface="sans"
+        android:textColor="#000000"
+        android:padding="18dp"
+        android:hint="Enter Password"
+        android:gravity="center"
+        android:inputType="textPassword"
+        android:layout_below="@id/userName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_corner"
+        android:textColorHint="#bbbbbb"
+        android:textCursorDrawable="@null"
+        />
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userPass"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:padding="10dp"
+        android:textColor="#ffffff"
+        android:text="Login Now"
+        android:background="@drawable/button"
+    />
+    </RelativeLayout>
+
+</RelativeLayout>
