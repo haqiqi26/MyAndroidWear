@@ -5,6 +5,20 @@
         <clip>
             <shape>
                 <gradient
+                    android:startColor="@color/orange"
+                    android:centerColor="@color/orange"
+                    android:centerY="1.0"
+                    android:endColor="@color/orange"
+                    android:angle="270"
+                    />
+            </shape>
+        </clip>
+    </item>
+
+    <item android:id="@android:id/secondaryProgress">
+        <clip>
+            <shape>
+                <gradient
                     android:startColor="@color/green"
                     android:centerColor="@color/green"
                     android:centerY="1.0"

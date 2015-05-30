@@ -37,15 +37,16 @@ public class ChartActivity extends ActionBarActivity {
 
             ProgressBar progressBar = new ProgressBar(ChartActivity.this, null, android.R.attr.progressBarStyleHorizontal);
             progressBar.setIndeterminate(false);
-            progressBar.setMax(500);
+            progressBar.setMax(600);
             progressBar.setProgress(0);
+            progressBar.setSecondaryProgress(0);
             progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.custom_progress));
 
             progressBar.setVisibility(View.VISIBLE);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,50);
             params.setMargins(0, 70 * i, 0, 0);
 
-            int x = rand.nextInt(400);
+            int x = rand.nextInt(600);
             tv.setText(x + " M");
             tv.setTextSize(15);
             tv.setGravity(Gravity.CENTER);
@@ -65,11 +66,26 @@ public class ChartActivity extends ActionBarActivity {
             layout.addView(day, params2);
 
             pb.add(progressBar);
+            if(x>300)
+            {
+                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 1, x);
+                animation.setDuration(2000); //in milliseconds
+                //animation.setInterpolator(new DecelerateInterpolator());
+                animation.start();
+                ObjectAnimator animation2 = ObjectAnimator.ofInt(progressBar, "secondaryProgress", 1, 300);
+                animation2.setDuration(2000); //in milliseconds
+                //animation.setInterpolator(new DecelerateInterpolator());
+                animation2.start();
+            }
+            else
+            {
+                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 1, x);
+                animation.setDuration(2000); //in milliseconds
+                //animation.setInterpolator(new DecelerateInterpolator());
+                animation.start();
+            }
 
-            ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 1, x);
-            animation.setDuration(2000); //in milliseconds
-            //animation.setInterpolator(new DecelerateInterpolator());
-            animation.start();
+
         }
     }
 
