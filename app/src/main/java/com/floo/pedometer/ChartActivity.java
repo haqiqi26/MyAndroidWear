@@ -68,18 +68,20 @@ public class ChartActivity extends ActionBarActivity {
             pb.add(progressBar);
             if(x>300)
             {
-                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 1, x);
-                animation.setDuration(2000); //in milliseconds
-                //animation.setInterpolator(new DecelerateInterpolator());
-                animation.start();
                 ObjectAnimator animation2 = ObjectAnimator.ofInt(progressBar, "secondaryProgress", 1, 300);
                 animation2.setDuration(2000); //in milliseconds
                 //animation.setInterpolator(new DecelerateInterpolator());
                 animation2.start();
+
+                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 1, x);
+                animation.setDuration(2000); //in milliseconds
+                //animation.setInterpolator(new DecelerateInterpolator());
+                animation.start();
+
             }
             else
             {
-                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 1, x);
+                ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "secondaryProgress", 1, x);
                 animation.setDuration(2000); //in milliseconds
                 //animation.setInterpolator(new DecelerateInterpolator());
                 animation.start();
