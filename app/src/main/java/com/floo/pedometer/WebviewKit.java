@@ -32,9 +32,9 @@ public class WebviewKit extends ActionBarActivity {
         centerButton= (ImageButton) findViewById(R.id.centerButton);
         userButton = (ImageButton) findViewById(R.id.userButton);
 
-        progressBar.setRotation(90);
+        progressBar.setRotation(135);
 
-        ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 1, 350);
+        ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 1, 100);
         animation.setDuration(2000); //in milliseconds
         animation.setInterpolator(new DecelerateInterpolator());
         animation.start();
