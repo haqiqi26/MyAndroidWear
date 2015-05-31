@@ -1,12 +1,15 @@
 package com.floo.pedometer;
 
 import android.animation.ObjectAnimator;
+import android.content.res.Resources;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,6 +20,10 @@ import java.util.Random;
 
 public class ChartActivity extends ActionBarActivity {
 
+    RelativeLayout layout;
+    ArrayList<ProgressBar> pb;
+    ArrayList<Integer> val;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,15 +31,15 @@ public class ChartActivity extends ActionBarActivity {
        // setContentView(R.layout.graph_image);
 
         String days[] = {"M","T","W","Th","F","S","Su"};
-        ArrayList<ProgressBar> pb = new ArrayList<>();
+        pb = new ArrayList<>();
+        val  = new ArrayList<>();
 
-        RelativeLayout layout = (RelativeLayout) findViewById(R.id.relative);
+        layout = (RelativeLayout) findViewById(R.id.relative);
 
         Random rand = new Random();
 
         for(int i=0;i<10;i++) {
 
-            TextView tv = new TextView(ChartActivity.this);
             TextView day = new TextView(ChartActivity.this);
 
             ProgressBar progressBar = new ProgressBar(ChartActivity.this, null, android.R.attr.progressBarStyleHorizontal);
@@ -44,12 +51,12 @@ public class ChartActivity extends ActionBarActivity {
 
             progressBar.setVisibility(View.VISIBLE);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,50);
-            params.setMargins(0, 70 * i, 0, 0);
+            params.setMargins(50, 70 * i, 0, 0);
 
             int x = rand.nextInt(600);
-            tv.setText(x + " M");
-            tv.setTextSize(15);
-            tv.setGravity(Gravity.CENTER);
+            val.add(x);
+
+
 
             day.setText(days[x % 7]);
             day.setTextSize(15);
@@ -59,13 +66,13 @@ public class ChartActivity extends ActionBarActivity {
             RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(50,50);
             params2.setMargins(0, 70 * i, 0, 0);
 
-
             layout.addView(progressBar, params);
-            layout.addView(tv, params);
+
+
 
             layout.addView(day, params2);
-
             pb.add(progressBar);
+
             if(x>300)
             {
                 ObjectAnimator animation2 = ObjectAnimator.ofInt(progressBar, "secondaryProgress", 1, 300);
@@ -96,6 +103,42 @@ public class ChartActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_chart, menu);
         return true;
+    }
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        // TODO Auto-generated method stub
+        super.onWindowFocusChanged(hasFocus);
+
+        int relativeWidth = layout.getWidth()-50;
+
+        for(int i =0; i<val.size();i++)
+        {
+            TextView tv = new TextView(ChartActivity.this);
+
+            int x = val.get(i);
+            tv.setText(x + " M");
+            tv.setTextSize(15);
+
+            if(x>150) {
+                RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams(((600-x)/600) * relativeWidth, 50);
+                params3.setMargins(50, 70 * i, 0, 0);
+                tv.setGravity(Gravity.CENTER_VERTICAL);
+                tv.setGravity(Gravity.RIGHT);
+                layout.addView(tv, params3);
+            }
+            else
+            {
+                RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 50);
+                params3.setMargins(50+(x/600)*relativeWidth, 70 * i, 0, 0);
+                tv.setGravity(Gravity.CENTER_VERTICAL);
+                tv.setGravity(Gravity.LEFT);
+                layout.addView(tv, params3);
+            }
+        }
+
+
+
+
     }
 
     @Override

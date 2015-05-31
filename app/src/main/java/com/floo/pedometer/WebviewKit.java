@@ -34,10 +34,15 @@ public class WebviewKit extends ActionBarActivity {
 
         progressBar.setRotation(135);
 
-        ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "progress", 1, 100);
+        ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "secondaryProgress", 1, 100);
         animation.setDuration(2000); //in milliseconds
-        animation.setInterpolator(new DecelerateInterpolator());
+        //animation.setInterpolator(new DecelerateInterpolator());
         animation.start();
+
+        ObjectAnimator animation2 = ObjectAnimator.ofInt(progressBar, "progress", 1, 250);
+        animation2.setDuration(2000); //in milliseconds
+        //animation2.setInterpolator(new DecelerateInterpolator());
+        animation2.start();
 
 
         userButton.setOnClickListener(new View.OnClickListener() {

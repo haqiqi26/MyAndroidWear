@@ -9,5 +9,12 @@
         <attr name="inscribed_circle" format="boolean" />
         <attr name="fill_percent" format="float" />
         <attr name="fill_bitmap" format="integer" />
-    </declare-styleable>e
+    </declare-styleable>
+    <declare-styleable name="circleview">
+        <attr name="cRadius" format="integer" />
+        <attr name="cFillColor" format="color" />
+        <attr name="cStrokeColor" format="color" />
+        <attr name="cAngleStart" format="integer" />
+        <attr name="cAngleEnd" format="integer" />
+    </declare-styleable>
 </resources>
