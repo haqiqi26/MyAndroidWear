@@ -10,16 +10,15 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 
 
-public class WebviewKit extends ActionBarActivity {
+public class HomeActivity extends ActionBarActivity {
 
     ProgressBar progressBar;
-    ImageButton mailButton,centerButton,userButton;
+    ImageButton chartButton,seedButton;
     MediaPlayer mp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,9 +27,9 @@ public class WebviewKit extends ActionBarActivity {
         //setContentView(R.layout.home_image);
 
         progressBar = (ProgressBar) findViewById(R.id.myProgress);
-        mailButton = (ImageButton) findViewById(R.id.mailButton);
-        centerButton= (ImageButton) findViewById(R.id.centerButton);
-        userButton = (ImageButton) findViewById(R.id.userButton);
+        chartButton = (ImageButton) findViewById(R.id.chartButton);
+        //centerButton= (ImageButton) findViewById(R.id.centerButton);
+        seedButton = (ImageButton) findViewById(R.id.seedButton);
 
         progressBar.setRotation(135);
 
@@ -45,30 +44,35 @@ public class WebviewKit extends ActionBarActivity {
         animation2.start();
 
 
-        userButton.setOnClickListener(new View.OnClickListener() {
+        seedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new SoundPlayer().execute();
-
-            }
-        });
-
-        mailButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new SoundPlayer().execute();
-            }
-        });
-        centerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new SoundPlayer().execute();
-
-                Intent i = new Intent(WebviewKit.this,ChartActivity.class);
-                i.putExtra("anim id in", R.anim.up_in);
-                i.putExtra("anim id out", R.anim.up_out);
+                Intent i = new Intent(HomeActivity.this,SeedActivity.class);
+                //i.putExtra("anim id in", R.anim.up_in);
+                //i.putExtra("anim id out", R.anim.up_out);
                 startActivity(i);
-                overridePendingTransition(R.anim.down_in, R.anim.down_out);
+                //overridePendingTransition(R.anim.down_in, R.anim.down_out);
+
+            }
+        });
+
+        /*chart_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new SoundPlayer().execute();
+            }
+        });*/
+        chartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new SoundPlayer().execute();
+
+                Intent i = new Intent(HomeActivity.this,ChartActivity.class);
+                //i.putExtra("anim id in", R.anim.up_in);
+                //i.putExtra("anim id out", R.anim.up_out);
+                startActivity(i);
+                //overridePendingTransition(R.anim.down_in, R.anim.down_out);
             }
         });
     }
@@ -76,7 +80,7 @@ public class WebviewKit extends ActionBarActivity {
     private class SoundPlayer extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            mp = MediaPlayer.create(WebviewKit.this, Uri.parse("/system/media/audio/ui/Effect_Tick.ogg"));
+            mp = MediaPlayer.create(HomeActivity.this, Uri.parse("/system/media/audio/ui/Effect_Tick.ogg"));
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
                 @Override

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="100"
-    tools:context="com.floo.pedometer.WebviewKit"
+    tools:context="com.floo.pedometer.HomeActivity"
     android:background="#D8D8D8"
     android:soundEffectsEnabled="true">
     <LinearLayout
@@ -198,28 +198,23 @@
                 <View
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:background="@drawable/circle_grey"
+                    android:background="@drawable/circle_grey2"
                     android:layout_centerInParent="true"
                     android:id="@+id/view1"/>
                 <ImageButton
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_centerInParent="true"
-                    android:layout_alignRight="@id/view1"
-                    android:layout_alignLeft="@id/view1"
-                    android:gravity="center"
                     android:orientation="vertical"
-                    android:layout_alignBottom="@id/view1"
-                    android:layout_alignTop="@id/view1"
-                    android:id="@+id/mailButton"
-                    android:background="@drawable/mail_button"/>
+                    android:id="@+id/chartButton"
+                    android:background="@drawable/chart_button"/>
             </RelativeLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="30">
-            <RelativeLayout
+            <!--RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <ImageButton
@@ -229,7 +224,7 @@
                     android:layout_alignParentBottom="true"
                     android:id="@+id/centerButton"
                     android:background="@drawable/center_button"/>
-            </RelativeLayout>
+            </RelativeLayout-->
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
@@ -241,21 +236,17 @@
                 <View
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:background="@drawable/circle_grey"
+                    android:background="@drawable/circle_grey2"
                     android:layout_centerInParent="true"
                     android:id="@+id/view2"/>
                 <ImageButton
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_alignRight="@id/view2"
-                    android:layout_alignLeft="@id/view2"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:layout_alignBottom="@id/view2"
-                    android:layout_alignTop="@id/view2"
                     android:layout_centerInParent="true"
-                    android:id="@+id/userButton"
-                    android:background="@drawable/user_button"/>
+                    android:id="@+id/seedButton"
+                    android:background="@drawable/seed_button"/>
             </RelativeLayout>
         </LinearLayout>
 

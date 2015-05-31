@@ -160,8 +160,8 @@ public class ChartActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         this.finish();
-        overridePendingTransition(
+        /*overridePendingTransition(
                 getIntent().getIntExtra("anim id in", R.anim.left_in),
-                getIntent().getIntExtra("anim id out", R.anim.left_out));
+                getIntent().getIntExtra("anim id out", R.anim.left_out));*/
     }
 }

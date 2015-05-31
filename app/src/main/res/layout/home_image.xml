@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="100"
-    tools:context="com.floo.pedometer.WebviewKit"
+    tools:context="com.floo.pedometer.HomeActivity"
     android:background="@drawable/background"
     android:soundEffectsEnabled="true">
     <LinearLayout
@@ -53,7 +53,7 @@
                     android:orientation="vertical"
                     android:layout_alignBottom="@id/view1"
                     android:layout_alignTop="@id/view1"
-                    android:id="@+id/mailButton"
+                    android:id="@+id/chartButton"
                     android:background="@drawable/mail_button"/>
             </RelativeLayout>
         </LinearLayout>
@@ -96,7 +96,7 @@
                     android:layout_alignBottom="@id/view2"
                     android:layout_alignTop="@id/view2"
                     android:layout_centerInParent="true"
-                    android:id="@+id/userButton"
+                    android:id="@+id/seedButton"
                     android:background="@drawable/user_button"/>
             </RelativeLayout>
         </LinearLayout>
