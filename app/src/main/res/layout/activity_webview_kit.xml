@@ -18,24 +18,24 @@
             android:id="@+id/p1">
 
             <View
-                android:layout_width="290dp"
-                android:layout_height="290dp"
+                android:layout_width="270dp"
+                android:layout_height="270dp"
                 android:background="@drawable/circle_grey2"
                 android:layout_centerInParent="true"
                 android:id="@+id/circleBack"/>
             <ProgressBar
                 android:id="@+id/myProgress"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="265dp"
-                android:layout_height="265dp"
+                android:layout_width="240dp"
+                android:layout_height="240dp"
                 android:max="400"
                 android:progress="0"
                 android:progressDrawable="@drawable/circular_progress"
                 android:layout_centerInParent="true"/>
             <com.floo.pedometer.CircleView
                 android:id="@+id/pieCircle"
-                android:layout_width="290dp"
-                android:layout_height="290dp"
+                android:layout_width="270dp"
+                android:layout_height="270dp"
                 app:cFillColor="#B0B0B0"
                 app:cStrokeColor="#B0B0B0"
                 app:cAngleStart="45"
@@ -45,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/circleBack"
-                android:layout_marginTop="220dp"
+                android:layout_marginTop="200dp"
                 android:layout_centerHorizontal="true">
                 <com.floo.pedometer.Polygon
                     android:layout_width="120dp"
@@ -64,7 +64,7 @@
                     android:layout_alignTop="@id/image2"
                     android:layout_alignBottom="@id/image2"
                     android:text="TARGET"
-                    android:textColor="@color/primary_text_default_material_dark"
+                    android:textColor="@android:color/white"
                     android:gravity="center|top"
                     android:textSize="15dp"
                     android:id="@+id/text2"
@@ -78,7 +78,7 @@
                     android:layout_alignBottom="@id/image2"
                     android:id="@+id/targetOutdoors"
                     android:text=">3H TODAY"
-                    android:textColor="@color/primary_text_default_material_dark"
+                    android:textColor="@android:color/white"
                     android:gravity="center"
                     android:textSize="17dp" />
                     </RelativeLayout>
@@ -92,7 +92,7 @@
                 app:stroke_color="#D8D8D8"
                 android:layout_centerHorizontal="true"
                 android:layout_alignTop="@+id/circleBack"
-                android:layout_marginTop="220dp"/>
+                android:layout_marginTop="200dp"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -103,31 +103,6 @@
                 android:orientation="vertical"
                 android:layout_alignBottom="@+id/myProgress"
                 android:layout_alignTop="@+id/myProgress">
-
-                <!--LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="40">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="TOTAL"
-                        android:gravity="center|bottom"
-                        android:textSize="20dp"
-                        android:textColor="@color/primary_text_default_material_dark"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="10">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="OUTDOORTIME"
-                        android:gravity="center"
-                        android:textSize="15dp"
-                        android:textColor="@color/primary_text_default_material_dark"/>
-                </LinearLayout-->
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
@@ -138,8 +113,8 @@
                 android:id="@+id/progressText"
                 android:text="2H 13M"
                 android:gravity="center|bottom"
-                android:textSize="50dp"
-                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="45dp"
+                android:textColor="@android:color/white"
                 />
         </LinearLayout>
         <LinearLayout
@@ -153,7 +128,7 @@
                 android:text="OUTDOORS\nTODAY"
                 android:gravity="center|bottom"
                 android:textSize="20dp"
-                android:textColor="@color/primary_text_default_material_dark"/>
+                android:textColor="@android:color/white"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="fill_parent"
@@ -214,17 +189,6 @@
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="30">
-            <!--RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <ImageButton
-                    android:layout_width="90dp"
-                    android:layout_height="35dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_alignParentBottom="true"
-                    android:id="@+id/centerButton"
-                    android:background="@drawable/center_button"/>
-            </RelativeLayout-->
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"

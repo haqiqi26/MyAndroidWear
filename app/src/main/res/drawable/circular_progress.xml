@@ -7,8 +7,6 @@
                 android:useLevel="false"
                 android:thicknessRatio="7.0">
                 <solid android:color="#C0C0C0"/>
-                <stroke android:color="#B0B0B0"
-                    android:width="5dp"/>
             </shape>
 
     </item>
@@ -18,8 +16,6 @@
                 android:shape="ring"
                 android:thicknessRatio="7.0">
                 <solid android:color="@color/green" />
-                <stroke android:color="#B0B0B0"
-                    android:width="5dp"/>
             </shape>
     </item>
     <item android:id="@android:id/secondaryProgress">
@@ -28,8 +24,6 @@
                 android:shape="ring"
                 android:thicknessRatio="7.0">
                 <solid android:color="@color/orange" />
-                <stroke android:color="#B0B0B0"
-                    android:width="5dp"/>
             </shape>
     </item>
 </layer-list>

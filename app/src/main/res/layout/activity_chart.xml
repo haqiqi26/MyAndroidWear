@@ -33,7 +33,7 @@
                 android:text="0"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:background="@drawable/siver_notif_back"/>
+                android:background="@drawable/silver_notif_back"/>
 
             <TextView
                 android:layout_width="50dp"
