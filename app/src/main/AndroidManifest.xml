@@ -34,6 +34,10 @@
             android:name=".SeedActivity"
             android:label="@string/title_activity_seed" >
         </activity>
+        <activity
+            android:name=".CongratsActivity"
+            android:label="@string/title_activity_congrats" >
+        </activity>
     </application>
 
 </manifest>

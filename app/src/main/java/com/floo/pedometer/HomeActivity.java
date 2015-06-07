@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,9 @@ public class HomeActivity extends ActionBarActivity {
     ProgressBar progressBar;
     ImageButton chartButton,seedButton;
     MediaPlayer mp;
+    DatabaseHandler db;
+    MyTextView totalTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,18 +34,43 @@ public class HomeActivity extends ActionBarActivity {
         chartButton = (ImageButton) findViewById(R.id.chartButton);
         //centerButton= (ImageButton) findViewById(R.id.centerButton);
         seedButton = (ImageButton) findViewById(R.id.seedButton);
+        totalTime = (MyTextView) findViewById(R.id.progressText);
 
+        db = DatabaseHandler.getInstance(this);
         progressBar.setRotation(135);
 
-        ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "secondaryProgress", 1, 100);
-        animation.setDuration(2000); //in milliseconds
-        //animation.setInterpolator(new DecelerateInterpolator());
-        animation.start();
+        int todayMinutes = db.getTodayMinutes();
+        Log.e("minute", Integer.toString(todayMinutes));
+        //int todayMinutes = 188;
 
-        ObjectAnimator animation2 = ObjectAnimator.ofInt(progressBar, "progress", 1, 250);
-        animation2.setDuration(2000); //in milliseconds
-        //animation2.setInterpolator(new DecelerateInterpolator());
-        animation2.start();
+        if(todayMinutes<180)
+        {
+            double progressValue = ((double)todayMinutes/(double)180)*150;
+            ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "secondaryProgress", 1, (int)Math.round(progressValue));
+            animation.setDuration(2000); //in milliseconds
+            //animation.setInterpolator(new DecelerateInterpolator());
+            animation.start();
+        }
+        else
+        {
+            ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "secondaryProgress", 1, 150);
+            animation.setDuration(1000); //in milliseconds
+            //animation.setInterpolator(new DecelerateInterpolator());
+            animation.start();
+
+            double progressValue = ((double)todayMinutes/(double)180)*150;
+
+            ObjectAnimator animation2 = ObjectAnimator.ofInt(progressBar, "progress", 1, (int)Math.round(progressValue));
+            animation2.setDuration(2000); //in milliseconds
+            //animation2.setInterpolator(new DecelerateInterpolator());
+            animation2.start();
+        }
+
+        totalTime.setText(Integer.toString(todayMinutes / 60)+"h "+Integer.toString(todayMinutes%60)+"m");
+
+
+
+
 
 
         seedButton.setOnClickListener(new View.OnClickListener() {

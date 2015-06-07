@@ -1,0 +1,55 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.floo.pedometer.CongratsActivity"
+    android:background="#D8D8D8">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin">
+    <TextView android:text="Congratulations! You Have\nWon a Platinum Badge\nThis Week"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:textSize="23dp"
+        android:id="@+id/congratsMessage"
+        android:layout_marginTop="50dp"/>
+
+        <ImageView
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:src="@drawable/platinum_badge"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/congratsMessage"
+            android:layout_marginTop="10dp"
+            android:id="@+id/badgeImage"
+            />
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_below="@+id/badgeImage"
+            android:src="@drawable/circle_grey2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"/>
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/badgeImage"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/home_icon"
+            android:id="@+id/homeButton"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/back_confetti">
+
+    </RelativeLayout>
+
+</RelativeLayout>

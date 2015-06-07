@@ -2,14 +2,17 @@ package com.floo.pedometer;
 
 import android.animation.ObjectAnimator;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,8 +24,10 @@ import java.util.Random;
 public class ChartActivity extends ActionBarActivity {
 
     RelativeLayout layout;
+    LinearLayout linearLayout;
     ArrayList<ProgressBar> pb;
     ArrayList<Integer> val;
+    Typeface tf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,9 @@ public class ChartActivity extends ActionBarActivity {
         val  = new ArrayList<>();
 
         layout = (RelativeLayout) findViewById(R.id.relative);
+        linearLayout = (LinearLayout) findViewById(R.id.linearChart);
+        tf = Typeface.createFromAsset(ChartActivity.this.getAssets(),
+                "fonts/comic_sans.ttf");
 
         Random rand = new Random();
 
@@ -44,7 +52,7 @@ public class ChartActivity extends ActionBarActivity {
 
             ProgressBar progressBar = new ProgressBar(ChartActivity.this, null, android.R.attr.progressBarStyleHorizontal);
             progressBar.setIndeterminate(false);
-            progressBar.setMax(600);
+            progressBar.setMax(360);
             progressBar.setProgress(0);
             progressBar.setSecondaryProgress(0);
             progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.custom_progress));
@@ -53,7 +61,7 @@ public class ChartActivity extends ActionBarActivity {
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,50);
             params.setMargins(50, 70 * i, 0, 0);
 
-            int x = rand.nextInt(600);
+            int x = rand.nextInt(360);
             val.add(x);
 
 
@@ -73,9 +81,9 @@ public class ChartActivity extends ActionBarActivity {
             layout.addView(day, params2);
             pb.add(progressBar);
 
-            if(x>300)
+            if(x>180)
             {
-                ObjectAnimator animation2 = ObjectAnimator.ofInt(progressBar, "secondaryProgress", 1, 300);
+                ObjectAnimator animation2 = ObjectAnimator.ofInt(progressBar, "secondaryProgress", 1, 180);
                 animation2.setDuration(2000); //in milliseconds
                 //animation.setInterpolator(new DecelerateInterpolator());
                 animation2.start();
@@ -93,6 +101,59 @@ public class ChartActivity extends ActionBarActivity {
                 //animation.setInterpolator(new DecelerateInterpolator());
                 animation.start();
             }
+            linearLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e("linear", "width: " + linearLayout.getWidth() + " height:" + linearLayout.getHeight());
+
+                    int linearWidth = linearLayout.getWidth();
+
+                    for(int i =0; i<val.size();i++)
+                    {
+                        TextView tv = new TextView(ChartActivity.this);
+
+                        int totalMinutes = val.get(i);
+                        tv.setText(totalMinutes / 60 + "h " + totalMinutes % 60 + "m");
+                        tv.setTextSize(15);
+                        tv.setTypeface(tf);
+
+                        double endChartWidth = ((double)totalMinutes/(double)360)*linearWidth;
+                        RelativeLayout.LayoutParams params3 = new RelativeLayout
+                                .LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                                RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                        if(totalMinutes<=90) {
+                            params3.setMargins(50 + (int) Math.round(endChartWidth), 70 * i, 0, 0);
+                            tv.setGravity(Gravity.CENTER_VERTICAL);
+                            layout.addView(tv, params3);
+                        }
+                        else
+                        {
+                            params3.setMargins(50 , 70 * i, linearWidth - (int) Math.round(endChartWidth), 0);
+                            tv.setGravity(Gravity.END);
+                            layout.addView(tv, params3);
+                        }
+
+
+/*
+
+                        if(totalMinutes>90) {//> 90 minutes
+                            RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams( endChartWidth, 50);
+                            params3.setMargins(50, 70 * i, 0, 0);
+                            tv.setGravity(Gravity.CENTER_VERTICAL);
+                            layout.addView(tv, params3);
+                        }
+                        else
+                        {
+                            RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 50);
+                            params3.setMargins(50+endChartWidth, 70 * i, 0, 0);
+                            tv.setGravity(Gravity.CENTER_VERTICAL);
+                            layout.addView(tv, params3);
+                        }*/
+                    }
+
+                }
+            });
 
 
         }
@@ -109,32 +170,7 @@ public class ChartActivity extends ActionBarActivity {
         // TODO Auto-generated method stub
         super.onWindowFocusChanged(hasFocus);
 
-        int relativeWidth = layout.getWidth()-50;
 
-        for(int i =0; i<val.size();i++)
-        {
-            TextView tv = new TextView(ChartActivity.this);
-
-            int x = val.get(i);
-            tv.setText(x + " M");
-            tv.setTextSize(15);
-
-            if(x>150) {
-                RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams(((600-x)/600) * relativeWidth, 50);
-                params3.setMargins(50, 70 * i, 0, 0);
-                tv.setGravity(Gravity.CENTER_VERTICAL);
-                tv.setGravity(Gravity.RIGHT);
-                layout.addView(tv, params3);
-            }
-            else
-            {
-                RelativeLayout.LayoutParams params3 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 50);
-                params3.setMargins(50+(x/600)*relativeWidth, 70 * i, 0, 0);
-                tv.setGravity(Gravity.CENTER_VERTICAL);
-                tv.setGravity(Gravity.LEFT);
-                layout.addView(tv, params3);
-            }
-        }
 
 
 
