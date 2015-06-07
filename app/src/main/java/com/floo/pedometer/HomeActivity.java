@@ -67,12 +67,6 @@ public class HomeActivity extends ActionBarActivity {
         }
 
         totalTime.setText(Integer.toString(todayMinutes / 60)+"h "+Integer.toString(todayMinutes%60)+"m");
-
-
-
-
-
-
         seedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,16 +80,32 @@ public class HomeActivity extends ActionBarActivity {
             }
         });
 
-        /*chart_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new SoundPlayer().execute();
-            }
-        });*/
+
         chartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new SoundPlayer().execute();
+
+                db.addUserBadgeData(new UserBadge("john", 0, 12));
+                db.addUserBadgeData(new UserBadge("jane", 2, 10));
+                db.addUserBadgeData(new UserBadge("jack",4,5));
+
+                db.addOutdoorDataToday(5);
+                db.addOutdoorDataToday(10);
+                db.addOutdoorDataToday(50);
+
+                db.addOutdoorData(new OutdoorData("2015-06-08 11:11:11", 18));
+                db.addOutdoorData(new OutdoorData("2015-06-07 11:11:11",50));
+                db.addOutdoorData(new OutdoorData("2015-06-08 11:11:11",39));
+                db.addOutdoorData(new OutdoorData("2015-06-06 11:11:11",55));
+                db.addOutdoorData(new OutdoorData("2015-06-01 11:11:11",88));
+                db.addOutdoorData(new OutdoorData("2015-06-02 11:11:11",91));
+                db.addOutdoorData(new OutdoorData("2015-04-08 11:11:11",12));
+                db.addOutdoorData(new OutdoorData("2015-02-08 11:11:11",116));
+                db.addOutdoorData(new OutdoorData("2015-03-08 11:11:11",170));
+                db.addOutdoorData(new OutdoorData("2015-05-08 11:11:11",150));
+
+
 
                 Intent i = new Intent(HomeActivity.this,ChartActivity.class);
                 //i.putExtra("anim id in", R.anim.up_in);
@@ -122,6 +132,12 @@ public class HomeActivity extends ActionBarActivity {
             mp.start();
             return null;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     @Override

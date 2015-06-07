@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.widget.Button;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -34,7 +32,7 @@ public class MainActivity extends ActionBarActivity {
         db = DatabaseHandler.getInstance(this);
         Random rand = new Random();
         int x = rand.nextInt(150)+150;
-        db.addDataToday(x);
+        db.addOutdoorDataToday(x);
 
         String dateNow = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
@@ -99,7 +97,7 @@ public class MainActivity extends ActionBarActivity {
     public void onBackPressed() {
         super.onBackPressed();
         this.finish();
-        db.truncateTable();
+        db.truncateOutdoorTable();
         outdoorDatas.clear();
 
     }
