@@ -130,7 +130,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public int getTodayMinutes(){
         int minutes=0;
-        String selectQuery = "SELECT SUM("+ KEY_OUTDOOR_MINUTES +") FROM " + TABLE_OUTDOOR_DATAS + " WHERE DATE("+ KEY_OUTDOOR_TIMESTAMP +") = DATE() GROUP BY DATE("+ KEY_OUTDOOR_TIMESTAMP +")";
+        String selectQuery = "SELECT SUM("+ KEY_OUTDOOR_MINUTES +") AS TOTAL_MINUTES FROM " + TABLE_OUTDOOR_DATAS + " WHERE DATE("+ KEY_OUTDOOR_TIMESTAMP +") = DATE('now','localtime') GROUP BY DATE("+ KEY_OUTDOOR_TIMESTAMP +")";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -140,6 +140,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             minutes = Integer.parseInt(cursor.getString(0));
         }
         return minutes;
+    }
+    public void testingQuery(){
+        String selectQuery = "SELECT DATE("+ KEY_OUTDOOR_TIMESTAMP +"),DATE('now','localtime') FROM " + TABLE_OUTDOOR_DATAS ;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+            Log.e("data",cursor.getString(0)+" "+cursor.getString(1));
+        }
     }
     public void deleteOutdoorData(OutdoorData outdoorData) {
         SQLiteDatabase db = this.getWritableDatabase();

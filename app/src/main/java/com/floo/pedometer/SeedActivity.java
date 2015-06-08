@@ -5,17 +5,18 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
 public class SeedActivity extends ActionBarActivity {
 
-    TextView backText;
+    ImageView backText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seed);
-        backText = (TextView) findViewById(R.id.seedBackButton);
+        backText = (ImageView) findViewById(R.id.seedBackButton);
         backText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

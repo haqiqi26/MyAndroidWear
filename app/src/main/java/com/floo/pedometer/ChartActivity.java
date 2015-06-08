@@ -32,6 +32,9 @@ public class ChartActivity extends ActionBarActivity {
     TextView platinumCount,goldCount;
     Typeface tf;
     DatabaseHandler db;
+    int myWidth =100;
+    int myHeight =100;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +79,8 @@ public class ChartActivity extends ActionBarActivity {
             progressBar.setProgressDrawable(getResources().getDrawable(R.drawable.custom_progress));
 
             progressBar.setVisibility(View.VISIBLE);
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,50);
-            params.setMargins(50, 70 * i, 0, 0);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,myHeight);
+            params.setMargins(myWidth, (myHeight+10) * i, 0, 0);
 
             int x = rand.nextInt(360);
             //val.add(x);
@@ -87,11 +90,11 @@ public class ChartActivity extends ActionBarActivity {
 
             day.setTextSize(10);
             day.setGravity(Gravity.CENTER);
-            day.setBackgroundResource(R.color.light_green);
+            day.setBackgroundResource(R.color.lightorange);
             day.setTextColor(Color.BLACK);
 
-            RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(50,50);
-            params2.setMargins(0, 70 * i, 0, 0);
+            RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(myWidth,myHeight);
+            params2.setMargins(0, (myHeight+10) * i, 0, 0);
 
             layout.addView(progressBar, params);
             layout.addView(day, params2);
@@ -134,22 +137,29 @@ public class ChartActivity extends ActionBarActivity {
                     int totalMinutes = outdoorData.getMinutes();
                     tv.setText(totalMinutes / 60 + "h " + totalMinutes % 60 + "m");
                     tv.setTextSize(15);
+                    tv.setTextColor(Color.BLACK);
                     tv.setTypeface(tf);
 
                     double endChartWidth = ((double)totalMinutes/(double)360)*linearWidth;
                     RelativeLayout.LayoutParams params3 = new RelativeLayout
                             .LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                            RelativeLayout.LayoutParams.WRAP_CONTENT);
+                            myHeight);
 
                     if(totalMinutes<=90) {
-                        params3.setMargins(50 + (int) Math.round(endChartWidth), 72 * j, 0, 0);
+                        params3.setMargins(myWidth + (int) Math.round(endChartWidth), (myHeight+14) * j, 0, 0);
                         tv.setGravity(Gravity.CENTER_VERTICAL);
+                        layout.addView(tv, params3);
+                    }
+                    else if(totalMinutes>=350)
+                    {
+                        params3.setMargins(myWidth , (myHeight+14) * j, linearWidth - (int) Math.round(endChartWidth)-100, 0);
+                        tv.setGravity(Gravity.END|Gravity.CENTER_VERTICAL);
                         layout.addView(tv, params3);
                     }
                     else
                     {
-                        params3.setMargins(50 , 72 * j, linearWidth - (int) Math.round(endChartWidth), 0);
-                        tv.setGravity(Gravity.END);
+                        params3.setMargins(myWidth , (myHeight+14) * j, linearWidth - (int) Math.round(endChartWidth), 0);
+                        tv.setGravity(Gravity.END|Gravity.CENTER_VERTICAL);
                         layout.addView(tv, params3);
                     }
                     j++;

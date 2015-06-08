@@ -101,7 +101,7 @@ public class HomeActivity extends ActionBarActivity {
                 db.addOutdoorData(new OutdoorData("2015-06-01 11:11:11",88));
                 db.addOutdoorData(new OutdoorData("2015-06-02 11:11:11",91));
                 db.addOutdoorData(new OutdoorData("2015-04-08 11:11:11",12));
-                db.addOutdoorData(new OutdoorData("2015-02-08 11:11:11",116));
+                db.addOutdoorData(new OutdoorData("2015-02-08 11:11:11",355));
                 db.addOutdoorData(new OutdoorData("2015-03-08 11:11:11",170));
                 db.addOutdoorData(new OutdoorData("2015-05-08 11:11:11",150));
 
@@ -124,7 +124,6 @@ public class HomeActivity extends ActionBarActivity {
 
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    // TODO Auto-generated method stub
                     mp.release();
                 }
 

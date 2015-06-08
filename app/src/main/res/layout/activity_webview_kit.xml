@@ -10,7 +10,7 @@
     android:orientation="vertical"
     android:weightSum="100"
     tools:context="com.floo.pedometer.HomeActivity"
-    android:background="#D8D8D8"
+    android:background="@color/lightgrey"
     android:soundEffectsEnabled="true">
     <LinearLayout
         android:layout_width="fill_parent"
@@ -24,7 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="FitSight"
-                android:textColor="#B0B0B0"
+                android:textColor="@color/textgrey"
                 android:layout_centerHorizontal="true"
                 android:textSize="40dp"
                 android:id="@+id/textHome"
@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TM"
-                android:textColor="#B0B0B0"
+                android:textColor="@color/textgrey"
                 android:layout_centerHorizontal="true"
                 android:textSize="20dp"
                 android:layout_toRightOf="@id/textHome"
@@ -42,14 +42,14 @@
             <View
                 android:layout_width="270dp"
                 android:layout_height="270dp"
-                android:background="@drawable/circle_grey2"
+                android:background="@drawable/circle_grey"
                 android:layout_centerInParent="true"
                 android:id="@+id/circleBack"/>
             <ProgressBar
                 android:id="@+id/myProgress"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="240dp"
-                android:layout_height="240dp"
+                android:layout_width="260dp"
+                android:layout_height="260dp"
                 android:max="400"
                 android:progress="0"
                 android:progressDrawable="@drawable/circular_progress"
@@ -59,8 +59,8 @@
                 android:id="@+id/pieCircle"
                 android:layout_width="270dp"
                 android:layout_height="270dp"
-                app:cFillColor="#B0B0B0"
-                app:cStrokeColor="#B0B0B0"
+                app:cFillColor="@color/chartgrey"
+                app:cStrokeColor="@color/chartgrey"
                 app:cAngleStart="45"
                 app:cAngleEnd="90"
                 android:layout_centerInParent="true"/>
@@ -79,7 +79,7 @@
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     app:sides="5"
-                    app:fill_color="#B0B0B0"
+                    app:fill_color="@color/darkgrey"
                     app:fill_percent="100"
                     app:start_angle="90"
                     android:layout_centerInParent="true"
@@ -114,10 +114,10 @@
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 app:sides="5"
-                app:fill_color="#D8D8D8"
+                app:fill_color="@color/lightgrey"
                 app:fill_percent="10"
                 app:start_angle="90"
-                app:stroke_color="#D8D8D8"
+                app:stroke_color="@color/lightgrey"
                 android:layout_centerHorizontal="true"
                 android:layout_alignTop="@+id/circleBack"
                 android:layout_marginTop="200dp"/>
@@ -142,7 +142,7 @@
                 android:text="2h 13m"
                 android:gravity="center|bottom"
                 android:textSize="45dp"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 />
         </LinearLayout>
         <LinearLayout
@@ -156,7 +156,7 @@
                 android:text="OUTDOORS\nTODAY"
                 android:gravity="center|bottom"
                 android:textSize="18dp"
-                android:textColor="@android:color/white"/>
+                android:textColor="@android:color/black"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="fill_parent"

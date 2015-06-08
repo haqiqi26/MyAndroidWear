@@ -51,6 +51,7 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         Log.e("minutes", "data: " + db.getTodayMinutes());
+        db.testingQuery();
         login = (Button) findViewById(R.id.loginButton);
 
         login.setOnClickListener(new View.OnClickListener() {
@@ -96,9 +97,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        this.finish();
         db.truncateOutdoorTable();
         outdoorDatas.clear();
+        this.finish();
 
     }
 
