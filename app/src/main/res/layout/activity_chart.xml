@@ -15,7 +15,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="20">
+        android:layout_weight="20"
+        android:orientation="vertical">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -95,11 +96,11 @@
                 android:id="@+id/charLevel"/>
             <com.floo.pedometer.MyTextView
                 android:layout_width="100px"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:textColor="@android:color/black"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:layout_alignTop="@+id/charLevel"
-                android:textSize="15dp"
+                android:textSize="10sp"
                 android:text="Hours/\nDay"
                 android:textStyle="bold"/>
 

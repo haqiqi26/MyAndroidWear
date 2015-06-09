@@ -181,7 +181,7 @@
                     <ImageView
                         android:layout_width="80dp"
                         android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
+                        android:src="@drawable/seed2"
                         android:layout_gravity="center"/>
 
                 </LinearLayout>
