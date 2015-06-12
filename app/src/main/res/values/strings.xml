@@ -7,4 +7,5 @@
     <string name="title_activity_chart">ChartActivity</string>
     <string name="title_activity_seed">SeedActivity</string>
     <string name="title_activity_congrats">CongratsActivity</string>
+    <string name="title_activity_bluetooth">BluetoothActivity</string>
 </resources>

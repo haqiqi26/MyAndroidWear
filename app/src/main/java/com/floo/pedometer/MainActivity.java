@@ -164,7 +164,7 @@ public class MainActivity extends ActionBarActivity {
                     if(valid==1)
                     {
                         Log.e("result", "exist");
-                        Random rand = new Random();
+/*                        Random rand = new Random();
                         int x = rand.nextInt(150)+150;
                         db.addOutdoorDataToday(x);
                         db.testingQuery();
@@ -177,7 +177,14 @@ public class MainActivity extends ActionBarActivity {
 
                         Intent i = new Intent(MainActivity.this,HomeActivity.class);
                         startActivity(i);
-                        createNotification();
+                        createNotification();*/
+                        UserPreferences userPreferences = new UserPreferences(MainActivity.this);
+                        userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,reply.getString("id_user"));
+                        userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,reply.getString("username"));
+
+                        Intent i = new Intent(MainActivity.this,BluetoothActivity.class);
+                        startActivity(i);
+
                     }
                     else if(valid==0)
                     {
