@@ -164,20 +164,20 @@ public class MainActivity extends ActionBarActivity {
                     if(valid==1)
                     {
                         Log.e("result", "exist");
-/*                        Random rand = new Random();
+                        Random rand = new Random();
                         int x = rand.nextInt(150)+150;
                         db.addOutdoorDataToday(x);
                         db.testingQuery();
 
-                        String dateNow = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                        //String dateNow = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
-                        PushToServer pushToServer = new PushToServer(reply.getString("id_user"),"xperia J / 1234");
-                        pushToServer.addData(dateNow,x);
-                        pushToServer.execute();
+                        //PushToServer pushToServer = new PushToServer(reply.getString("id_user"),"xperia J / 1234");
+                        //pushToServer.addData(dateNow,x);
+                       // pushToServer.execute();
 
-                        Intent i = new Intent(MainActivity.this,HomeActivity.class);
-                        startActivity(i);
-                        createNotification();*/
+                        //Intent i = new Intent(MainActivity.this,HomeActivity.class);
+                        //startActivity(i);
+                        createNotification();
                         UserPreferences userPreferences = new UserPreferences(MainActivity.this);
                         userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,reply.getString("id_user"));
                         userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,reply.getString("username"));

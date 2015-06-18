@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.ParcelUuid;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,11 +32,10 @@ import java.util.Set;
 public class BluetoothActivity extends ActionBarActivity {
 
     private static final int REQUEST_ENABLE_BT =1;
-    //Button onButton,offButton,listButton,findButton;
     Button findButton;
     TextView statusBT;
     BluetoothAdapter myBTAdapter;
-    Set<BluetoothDevice> pairedDevices;
+    List<BluetoothDevice> pairedDevices;
     List<BluetoothDevice> newDevices;
     ListView listViewPaired,listViewNew;
     ArrayAdapter<String> BTPairedArrayAdapter,BTNewArrayAdapter;
@@ -44,23 +44,14 @@ public class BluetoothActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
-        /*onButton = (Button)findViewById(R.id.turnOn);
-        offButton= (Button)findViewById(R.id.turnOff);
-        listButton = (Button)findViewById(R.id.paired);
-        findButton= (Button)findViewById(R.id.search);*/
         findButton= (Button)findViewById(R.id.find);
         statusBT = (TextView)findViewById(R.id.bluetoothStatus);
-        //listViewPaired = (ListView)findViewById(R.id.listPairedDevices);
+        listViewPaired = (ListView)findViewById(R.id.listPairedDevices);
         listViewNew = (ListView)findViewById(R.id.listNewDevices);
 
         myBTAdapter = BluetoothAdapter.getDefaultAdapter();
         if(myBTAdapter == null)
         {
-            /*
-            onButton.setEnabled(false);
-            offButton.setEnabled(false);
-            listButton.setEnabled(false);
-            findButton.setEnabled(false);*/
             statusBT.setText("Status: device not supported");
         }
         else
@@ -71,48 +62,27 @@ public class BluetoothActivity extends ActionBarActivity {
                     findBT();
                 }
             });
-            /*
-            onButton.setOnClickListener(new View.OnClickListener() {
+
+            BTPairedArrayAdapter = new ArrayAdapter<>(BluetoothActivity.this,R.layout.list_row);
+            BTNewArrayAdapter = new ArrayAdapter<>(BluetoothActivity.this,R.layout.list_row);
+
+            listViewPaired.setAdapter(BTPairedArrayAdapter);
+            listViewPaired.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public void onClick(View v) {
-                    turnOnBT();
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    UserPreferences userPreferences= new UserPreferences(BluetoothActivity.this);
+                    userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS,pairedDevices.get(position).getAddress());
+                    userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME,pairedDevices.get(position).getName());
+
+                    Log.e("selectedDevice",pairedDevices.get(position).getName());
+
+                    Intent i = new Intent(BluetoothActivity.this,HomeActivity.class);
+                    i.putExtra("selectedDevice", pairedDevices.get(position));
+                    startActivity(i);
+
                 }
             });
-            offButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    turnOffBT();
-                }
-            });
-            findButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    findBT();
-                }
-            });
-            listButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listPairedDevices();
-                }
-            });
-
-*/
-            //BTPairedArrayAdapter = new ArrayAdapter<String>(BluetoothActivity.this,android.R.layout.simple_expandable_list_item_1);
-            BTNewArrayAdapter = new ArrayAdapter<String>(BluetoothActivity.this,android.R.layout.simple_expandable_list_item_1){
-
-                @Override
-                public View getView(int position, View convertView, ViewGroup parent) {
-
-                    View view = super.getView(position, convertView, parent);
-                    TextView text = (TextView) view.findViewById(android.R.id.text1);
-                    text.setGravity(Gravity.CENTER);
-                    text.setTextColor(getResources().getColor(R.color.blue));
-                    return view;
-                }
-            };;
-
-            //listViewPaired.setAdapter(BTPairedArrayAdapter);
             listViewNew.setAdapter(BTNewArrayAdapter);
             listViewNew.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -121,7 +91,23 @@ public class BluetoothActivity extends ActionBarActivity {
                     userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS,newDevices.get(position).getAddress());
                     userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME,newDevices.get(position).getName());
                     try {
-                        createBond(newDevices.get(position));
+                        boolean flag = false;
+                        if(createBond(newDevices.get(position)))
+                        {
+                            String temp = BTNewArrayAdapter.getItem(position);
+                            BTNewArrayAdapter.remove(temp);
+                            BTNewArrayAdapter.notifyDataSetChanged();
+                            flag = true;
+                        }
+                        if(flag)
+                            newDevices.remove(position);
+                        listPairedDevices();
+
+                        Intent i = new Intent(BluetoothActivity.this,HomeActivity.class);
+                        i.putExtra("selectedDevice",newDevices.get(position));
+                        startActivity(i);
+
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -136,6 +122,7 @@ public class BluetoothActivity extends ActionBarActivity {
         super.onStart();
         turnOnBT();
         findBT();
+        listPairedDevices();
     }
 
     private void makeDiscoverable() {
@@ -143,6 +130,7 @@ public class BluetoothActivity extends ActionBarActivity {
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
         startActivity(discoverableIntent);
         Log.e("Log", "Discoverable ");
+
     }
 
     public void turnOnBT()
@@ -163,9 +151,18 @@ public class BluetoothActivity extends ActionBarActivity {
 
     public void listPairedDevices()
     {
-        pairedDevices = myBTAdapter.getBondedDevices();
-        for(BluetoothDevice device:pairedDevices)
-            BTPairedArrayAdapter.add(device.getName()+"\n"+device.getAddress());
+        pairedDevices = new ArrayList<>(myBTAdapter.getBondedDevices());
+        for(BluetoothDevice device:pairedDevices) {
+            BTPairedArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+            Log.e("paired","addr: "+device.getAddress()+" name: "+device.getName()+" uuid: "+device.getUuids());
+            /*ParcelUuid[] test = device.getUuids();
+            for(int i=0;i<test.length;i++)
+            {
+                Log.e(device.getName(), "uuid: "+test[i].getUuid().toString());
+            }*/
+
+        }
+        BTPairedArrayAdapter.notifyDataSetChanged();
     }
 
     final BroadcastReceiver receiver = new BroadcastReceiver() {
