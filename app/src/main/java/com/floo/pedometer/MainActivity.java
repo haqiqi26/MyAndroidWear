@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -40,9 +42,10 @@ import java.util.List;
 import java.util.Random;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener {
     DatabaseHandler db;
     Button login;
+    SwipeRefreshLayout refreshLayout;
     EditText username,pass;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,9 @@ public class MainActivity extends ActionBarActivity {
         pass = (EditText)findViewById(R.id.userPass);
         db = DatabaseHandler.getInstance(this);
         login = (Button) findViewById(R.id.loginButton);
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refreshLayout);
+        refreshLayout.setColorSchemeColors(R.color.orange,R.color.green,R.color.red);
+        refreshLayout.setOnRefreshListener(this);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +66,16 @@ public class MainActivity extends ActionBarActivity {
                 startActivity(i);
                 createNotification();
                 //finish();*/
-                new DoLogin().execute();
+                //new DoLogin().execute();
+                //Random rand = new Random();
+                //int x = rand.nextInt(150)+150;
+                //db.addOutdoorDataToday(x);
+                UserPreferences userPreferences = new UserPreferences(MainActivity.this);
+                userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,"1");
+                userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,"user1");
+
+                Intent i = new Intent(MainActivity.this,BluetoothActivity.class);
+                startActivity(i);
             }
         });
     }
@@ -93,6 +108,13 @@ public class MainActivity extends ActionBarActivity {
 
         notificationManager.notify(0, noti);
 
+    }
+
+    @Override
+    public void onRefresh() {
+
+        Toast.makeText(MainActivity.this,"Refreshing",Toast.LENGTH_LONG).show();
+        refreshLayout.setRefreshing(false);
     }
 
     private class DoLogin extends AsyncTask<String,Void,String>{
@@ -164,7 +186,7 @@ public class MainActivity extends ActionBarActivity {
                     if(valid==1)
                     {
                         Log.e("result", "exist");
-                        Random rand = new Random();
+                        /*Random rand = new Random();
                         int x = rand.nextInt(150)+150;
                         db.addOutdoorDataToday(x);
                         db.testingQuery();
@@ -176,11 +198,12 @@ public class MainActivity extends ActionBarActivity {
                        // pushToServer.execute();
 
                         //Intent i = new Intent(MainActivity.this,HomeActivity.class);
-                        //startActivity(i);
+                        //startActivity(i);*/
                         createNotification();
                         UserPreferences userPreferences = new UserPreferences(MainActivity.this);
                         userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,reply.getString("id_user"));
                         userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,reply.getString("username"));
+
 
                         Intent i = new Intent(MainActivity.this,BluetoothActivity.class);
                         startActivity(i);

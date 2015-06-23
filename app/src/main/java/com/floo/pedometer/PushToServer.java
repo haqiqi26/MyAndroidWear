@@ -1,5 +1,6 @@
 package com.floo.pedometer;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -20,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by SONY_VAIO on 6/10/2015.
@@ -28,8 +30,12 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
 
     String userID,phoneID;
     JSONArray dataArray;
-    public PushToServer(String userID,String phoneID)
+    Context context;
+    List<OutdoorData> unsyncDatas;
+    boolean pushList = false;
+    public PushToServer(Context context,String userID,String phoneID)
     {
+        this.context = context;
         this.userID= userID;
         this.phoneID = phoneID;
         dataArray = new JSONArray();
@@ -46,10 +52,31 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
             e.printStackTrace();
         }
         dataArray.put(dataObj);
-
+        pushList = false;
     }
+    public void setUnsyncDatas(List<OutdoorData> unsyncDatas) {
+        this.unsyncDatas = unsyncDatas;
+        pushList = true;
+    }
+
     @Override
     protected String doInBackground(Void... params) {
+
+        if(pushList)
+        {
+            for (OutdoorData data: unsyncDatas) {
+                JSONObject dataObj = new JSONObject();
+                try {
+                    dataObj.put("datetime", data.getTimeStamp());
+                    dataObj.put("phoneid", phoneID);
+                    dataObj.put("user", userID);
+                    dataObj.put("duration", data.getMinutes());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                dataArray.put(dataObj);
+            }
+        }
         // Create a new HttpClient and Post Header
         String result="";
         HttpParams myParams = new BasicHttpParams();
@@ -90,6 +117,16 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
             try {
                 JSONObject reply = new JSONObject(result);
                 int val = reply.getInt("result");
+                if(pushList)
+                {
+                    for (int i=0;i<val;i++)
+                    {
+                        OutdoorData data = unsyncDatas.get(i);
+                        data.setFlag(1);
+                        DatabaseHandler db = DatabaseHandler.getInstance(context);
+                        db.updateOutdoorData(data);
+                    }
+                }
                 Log.e("pushdata","push data done, result: "+val+"data size: "+dataArray.length());
             } catch (JSONException e) {
                 e.printStackTrace();

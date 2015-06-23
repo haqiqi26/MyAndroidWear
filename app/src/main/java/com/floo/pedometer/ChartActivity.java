@@ -42,7 +42,7 @@ public class ChartActivity extends ActionBarActivity {
         setContentView(R.layout.activity_chart);
        // setContentView(R.layout.graph_image);
 
-        String days[] = {"M","T","W","Th","F","S","Su"};
+        String days[] = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
         pb = new ArrayList<>();
         db = DatabaseHandler.getInstance(this);
 
@@ -51,7 +51,8 @@ public class ChartActivity extends ActionBarActivity {
         platinumCount = (TextView) findViewById(R.id.platinumCount);
         goldCount = (TextView) findViewById(R.id.goldCount);
 
-        UserBadge userBadge = db.getUserBadge("jane");
+        UserPreferences userPreferences = new UserPreferences(ChartActivity.this);
+        UserBadge userBadge = db.getUserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID));
         outdoorDataList  = db.getAllOutdoorsDatas();
 
 

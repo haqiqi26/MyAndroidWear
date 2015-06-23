@@ -121,8 +121,8 @@ public class BluetoothActivity extends ActionBarActivity {
     protected void onStart() {
         super.onStart();
         turnOnBT();
-        findBT();
         listPairedDevices();
+        findBT();
     }
 
     private void makeDiscoverable() {
@@ -140,11 +140,13 @@ public class BluetoothActivity extends ActionBarActivity {
             Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(turnOnIntent, REQUEST_ENABLE_BT);
             Toast.makeText(BluetoothActivity.this,"Bluetooth turned on",Toast.LENGTH_LONG).show();
+            listPairedDevices();
         }
         else
         {
             Toast.makeText(BluetoothActivity.this,"Bluetooth is already on",Toast.LENGTH_LONG).show();
             statusBT.setText("Status: Enabled");
+            listPairedDevices();
             makeDiscoverable();
         }
     }

@@ -7,11 +7,27 @@ public class OutdoorData {
     private int id;
     private String timeStamp;
     private int minutes;
+    private int flag;
 
-    public OutdoorData(int id, String timeStamp, int minutes) {
+    public int getFlag() {
+        return flag;
+    }
+
+    public void setFlag(int flag) {
+        this.flag = flag;
+    }
+
+    public OutdoorData(int id, String timeStamp, int minutes,int flag) {
         this.timeStamp = timeStamp;
         this.id = id;
         this.minutes = minutes;
+        this.flag = flag;
+    }
+
+    public OutdoorData(String timeStamp, int minutes,int flag) {
+        this.timeStamp = timeStamp;
+        this.minutes = minutes;
+        this.flag = flag;
     }
 
     public OutdoorData(String timeStamp, int minutes) {

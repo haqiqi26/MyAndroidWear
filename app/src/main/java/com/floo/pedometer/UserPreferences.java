@@ -12,6 +12,7 @@ public class UserPreferences {
     public static final String KEY_BLUETOOTH_ADDRESS = "macAddres";
     public static final String KEY_BLUETOOTH_NAME = "bluetoothDevice";
     public static final String KEY_USERNAME = "username";
+    public static final String KEY_LAST_SYNC = "lastSync";
 
     SharedPreferences sharedPreferences;
     Context context;
@@ -30,7 +31,7 @@ public class UserPreferences {
     public String getUserPreferences(String key)
     {
         String result = "";
-        if(key.equals(KEY_USER_ID)||key.equals(KEY_BLUETOOTH_ADDRESS)||key.equals(KEY_USERNAME)||key.equals(KEY_BLUETOOTH_NAME)) {
+        if(key.equals(KEY_USER_ID)||key.equals(KEY_BLUETOOTH_ADDRESS)||key.equals(KEY_USERNAME)||key.equals(KEY_BLUETOOTH_NAME)||key.equals(KEY_LAST_SYNC)) {
             result = sharedPreferences.getString(key,"");
         }
         return result;

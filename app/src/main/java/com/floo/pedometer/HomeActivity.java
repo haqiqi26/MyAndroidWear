@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,10 +25,13 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 
-public class HomeActivity extends ActionBarActivity {
+public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     ProgressBar progressBar;
     ImageButton chartButton,seedButton;
@@ -35,39 +41,56 @@ public class HomeActivity extends ActionBarActivity {
     MyTextView totalTime;
     ArrayAdapter<String>menuDrop;
     BluetoothDevice device;
-    UUID MY_UUID;
-    boolean running;
-    ThreadConnectBTdevice myThreadConnectBTdevice;
-    ThreadConnected myThreadConnected;
+    String deviceName;
+    SwipeRefreshLayout swipeLayout;
+    BluetoothDataService bluetoothDataService;
+    String lastSync;
+    UserPreferences userPreferences;
     //int todayMinutes;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_webview_kit);
+        setContentView(R.layout.activity_home);
 
         progressBar = (ProgressBar) findViewById(R.id.myProgress);
         chartButton = (ImageButton) findViewById(R.id.chartButton);
         seedButton = (ImageButton) findViewById(R.id.seedButton);
         totalTime = (MyTextView) findViewById(R.id.progressText);
         spinner = (Spinner) findViewById(R.id.spinnerDevices);
+        swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
         menuDrop = new ArrayAdapter<String>(HomeActivity.this, android.R.layout.simple_spinner_item);
-        UserPreferences userPreferences = new UserPreferences(HomeActivity.this);
-        String deviceName = userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME);
-        running =true;
+        userPreferences = new UserPreferences(HomeActivity.this);
+        deviceName = userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME);
+        lastSync = userPreferences.getUserPreferences(UserPreferences.KEY_LAST_SYNC);
+        if(lastSync.equals(""))
+        {
+            lastSync = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+            userPreferences.setUserPreferences(UserPreferences.KEY_LAST_SYNC,lastSync);
+        }
+        //lastSync = "2015-06-15 10:15:00";
+
+        swipeLayout.setOnRefreshListener(this);
+        swipeLayout.setColorSchemeColors(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        //swipeLayout.setRefreshing(true);
 
         if(deviceName!=null||deviceName.equals(""))
-            menuDrop.add(deviceName+"\nConnecting...");
+            menuDrop.add(deviceName);
         menuDrop.add("Pair with new watch");
         menuDrop.notifyDataSetChanged();
 
         spinner.setAdapter(menuDrop);
 
         device = getIntent().getExtras().getParcelable("selectedDevice");
-        MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-        myThreadConnectBTdevice = new ThreadConnectBTdevice(device);
-        myThreadConnectBTdevice.start();
+
+        bluetoothDataService = new BluetoothDataService(HomeActivity.this,mHandler);
+        bluetoothDataService.setLastSync(lastSync);
+        bluetoothDataService.connect(device,true);
 
         db = DatabaseHandler.getInstance(this);
         progressBar.setRotation(135);
@@ -96,25 +119,30 @@ public class HomeActivity extends ActionBarActivity {
             public void onClick(View v) {
                 new SoundPlayer().execute();
 
-                db.addUserBadgeData(new UserBadge("john", 0, 12));
-                db.addUserBadgeData(new UserBadge("jane", 2, 10));
-                db.addUserBadgeData(new UserBadge("jack",4,5));
+                if(db.getUserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID))==null)
+                {
+                    db.addUserBadgeData(new UserBadge("1", 0, 12));
+                    db.addUserBadgeData(new UserBadge("2", 2, 10));
+                    db.addUserBadgeData(new UserBadge("3",4,5));
+                }
 
-                db.addOutdoorDataToday(5);
-                db.addOutdoorDataToday(10);
-                db.addOutdoorDataToday(50);
+                if(db.getAllOutdoorsDatas().size()==0)
+                {
+                    db.addOutdoorDataToday(5);
+                    db.addOutdoorDataToday(10);
+                    db.addOutdoorDataToday(50);
 
-                db.addOutdoorData(new OutdoorData("2015-06-08 11:11:11", 18));
-                db.addOutdoorData(new OutdoorData("2015-06-07 11:11:11",50));
-                db.addOutdoorData(new OutdoorData("2015-06-08 11:11:11",39));
-                db.addOutdoorData(new OutdoorData("2015-06-06 11:11:11",55));
-                db.addOutdoorData(new OutdoorData("2015-06-01 11:11:11",88));
-                db.addOutdoorData(new OutdoorData("2015-06-02 11:11:11",91));
-                db.addOutdoorData(new OutdoorData("2015-04-08 11:11:11",12));
-                db.addOutdoorData(new OutdoorData("2015-02-08 11:11:11",355));
-                db.addOutdoorData(new OutdoorData("2015-03-08 11:11:11",170));
-                db.addOutdoorData(new OutdoorData("2015-05-08 11:11:11",150));
-
+                    db.addOutdoorData(new OutdoorData("2015-06-08 11:11:11", 18));
+                    db.addOutdoorData(new OutdoorData("2015-06-07 11:11:11",50));
+                    db.addOutdoorData(new OutdoorData("2015-06-08 11:11:11",39));
+                    db.addOutdoorData(new OutdoorData("2015-06-06 11:11:11",55));
+                    db.addOutdoorData(new OutdoorData("2015-06-01 11:11:11",88));
+                    db.addOutdoorData(new OutdoorData("2015-06-02 11:11:11",91));
+                    db.addOutdoorData(new OutdoorData("2015-04-08 11:11:11",12));
+                    db.addOutdoorData(new OutdoorData("2015-02-08 11:11:11",355));
+                    db.addOutdoorData(new OutdoorData("2015-03-08 11:11:11",170));
+                    db.addOutdoorData(new OutdoorData("2015-05-08 11:11:11",150));
+                }
 
 
                 Intent i = new Intent(HomeActivity.this,ChartActivity.class);
@@ -153,11 +181,55 @@ public class HomeActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        running = false;
-        if(myThreadConnectBTdevice!=null){
-            myThreadConnectBTdevice.cancel();
-        }
+        bluetoothDataService.stop();
 
+    }
+
+    final Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what)
+            {
+                case BluetoothDataService.DONE_READING:
+                    String latestDate = msg.getData().getString(BluetoothDataService.MESSAGE);
+                    if(!latestDate.equals(""))
+                    {
+                        userPreferences.setUserPreferences(UserPreferences.KEY_LAST_SYNC, latestDate);
+                        lastSync = latestDate;
+                        startProgressAnim(db.getTodayMinutes());
+                        List<OutdoorData>unSyncData = db.getUnsyncOutdoorsDatas();
+                        PushToServer pushToServer = new PushToServer(HomeActivity.this,userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID),"myPhoneID");//replace 1 with userID from login
+                        pushToServer.setUnsyncDatas(unSyncData);
+                        pushToServer.execute();
+                    }
+                    break;
+                //if success thread
+                //set last sync
+                //queary data
+                //push to server
+
+                case BluetoothDataService.FAILED:
+                    Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
+                    break;
+
+                //if failed
+                //keluar sync failed
+                case BluetoothDataService.STOPPED:
+                    Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
+                    break;
+            }
+            swipeLayout.setRefreshing(false);
+            bluetoothDataService.stop();
+        }
+    };
+
+    @Override
+    public void onRefresh() {
+        swipeLayout.setRefreshing(true);
+        bluetoothDataService = new BluetoothDataService(HomeActivity.this,mHandler);
+        bluetoothDataService.setLastSync(lastSync);
+        bluetoothDataService.connect(device,true);
     }
 
     private class SoundPlayer extends AsyncTask<Void, Void, Void> {
@@ -175,178 +247,6 @@ public class HomeActivity extends ActionBarActivity {
             mp.start();
             return null;
         }
-    }
-
-    private class ThreadConnectBTdevice extends Thread {
-        private BluetoothSocket bluetoothSocket = null;
-        private final BluetoothDevice bluetoothDevice;
-
-
-        public ThreadConnectBTdevice(BluetoothDevice device) {
-            bluetoothDevice = device;
-
-            try {
-                bluetoothSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
-                Log.e("log","bluetoothSocket: \n" + bluetoothSocket);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void run() {
-            boolean success = false;
-            try {
-                bluetoothSocket.connect();
-                success = true;
-            } catch (IOException e) {
-                e.printStackTrace();
-
-                final String eMessage = e.getMessage();
-                Log.e("log",eMessage);
-
-                try {
-                    bluetoothSocket.close();
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-            }
-
-            if(success){
-                //connect successful
-                final String msgconnected = "connect successful:\n"
-                        + "BluetoothSocket: " + bluetoothSocket + "\n"
-                        + "BluetoothDevice: " + bluetoothDevice;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String info = menuDrop.getItem(0);
-                        menuDrop.remove(info);
-                        info.replace("Connecting...", "Connected");
-                        menuDrop.insert(info,0);
-                        menuDrop.notifyDataSetChanged();
-
-                    }
-                });
-                Log.e("log",msgconnected);
-
-                startThreadConnected(bluetoothSocket);
-            }else{
-                //fail
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String info = menuDrop.getItem(0);
-                        menuDrop.remove(info);
-                        info.replace("Connecting...", "Failed");
-                        menuDrop.insert(info,0);
-                        menuDrop.notifyDataSetChanged();
-                    }
-                });
-                Log.e("log","failed to connect");
-            }
-        }
-
-        public void cancel() {
-
-            Toast.makeText(getApplicationContext(),
-                    "close bluetoothSocket",
-                    Toast.LENGTH_LONG).show();
-
-            try {
-                bluetoothSocket.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-        }
-    }
-    private void startThreadConnected(BluetoothSocket socket){
-
-        myThreadConnected = new ThreadConnected(socket);
-        myThreadConnected.start();
-        myThreadConnected.write("get".getBytes());
-    }
-
-    private class ThreadConnected extends Thread {
-        private final BluetoothSocket connectedBluetoothSocket;
-        private final InputStream connectedInputStream;
-        private final OutputStream connectedOutputStream;
-
-        public ThreadConnected(BluetoothSocket socket) {
-            connectedBluetoothSocket = socket;
-            InputStream in = null;
-            OutputStream out = null;
-
-            try {
-                in = socket.getInputStream();
-                out = socket.getOutputStream();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            connectedInputStream = in;
-            connectedOutputStream = out;
-        }
-
-        @Override
-        public void run() {
-            byte[] buffer = new byte[1024];
-            int bytes;
-
-            while (running) {
-                try {
-                    bytes = connectedInputStream.read(buffer);
-                    final String strReceived = new String(buffer, 0, bytes);
-                    final String msgReceived = String.valueOf(bytes) +
-                            " bytes received:\n"
-                            + strReceived;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //get data
-                            int todayMinutes = Integer.parseInt(strReceived);
-                            startProgressAnim(todayMinutes);
-
-                            Toast.makeText(HomeActivity.this,"Sync",Toast.LENGTH_LONG).show();
-
-                        }
-                    });
-                    Log.e("log",msgReceived);
-
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-
-                    final String msgConnectionLost = "Connection lost:\n"
-                            + e.getMessage();
-                    Log.e("log", msgConnectionLost);
-                }
-            }
-        }
-
-        public void write(byte[] buffer) {
-            try {
-                connectedOutputStream.write(buffer);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
-        public void cancel() {
-            try {
-                connectedBluetoothSocket.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
     }
 
     @Override
