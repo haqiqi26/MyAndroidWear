@@ -67,10 +67,10 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         lastSync = userPreferences.getUserPreferences(UserPreferences.KEY_LAST_SYNC);
         if(lastSync.equals(""))
         {
-            lastSync = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+            //lastSync = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+            lastSync = "2015-06-15 10:15:00";
             userPreferences.setUserPreferences(UserPreferences.KEY_LAST_SYNC,lastSync);
         }
-        //lastSync = "2015-06-15 10:15:00";
 
         swipeLayout.setOnRefreshListener(this);
         swipeLayout.setColorSchemeColors(android.R.color.holo_blue_bright,
@@ -121,9 +121,9 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
                 if(db.getUserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID))==null)
                 {
-                    db.addUserBadgeData(new UserBadge("1", 0, 12));
-                    db.addUserBadgeData(new UserBadge("2", 2, 10));
-                    db.addUserBadgeData(new UserBadge("3",4,5));
+                    db.addUserBadgeData(new UserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID), 0, 12));
+//                    db.addUserBadgeData(new UserBadge("2", 2, 10));
+  //                  db.addUserBadgeData(new UserBadge("3",4,5));
                 }
 
                 if(db.getAllOutdoorsDatas().size()==0)
@@ -202,7 +202,17 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                         PushToServer pushToServer = new PushToServer(HomeActivity.this,userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID),"myPhoneID");//replace 1 with userID from login
                         pushToServer.setUnsyncDatas(unSyncData);
                         pushToServer.execute();
+
+                        Toast.makeText(HomeActivity.this, "Updated"+lastSync,Toast.LENGTH_LONG).show();
+
+                        //        bluetoothDataService.stop();
                     }
+                    else
+                    {
+                        Toast.makeText(HomeActivity.this, "no new data"+lastSync,Toast.LENGTH_LONG).show();
+                    }
+                    Log.e("handler", "done reading");
+                    swipeLayout.setRefreshing(false);
                     break;
                 //if success thread
                 //set last sync
@@ -211,16 +221,24 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
                 case BluetoothDataService.FAILED:
                     Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
+
+                    swipeLayout.setRefreshing(false);
+//                    bluetoothDataService.stop();
+
+                    Log.e("handler", "failed");
                     break;
 
                 //if failed
                 //keluar sync failed
                 case BluetoothDataService.STOPPED:
                     Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
+
+                    swipeLayout.setRefreshing(false);
+//                    bluetoothDataService.stop();
+
+                    Log.e("handler","stopped");
                     break;
             }
-            swipeLayout.setRefreshing(false);
-            bluetoothDataService.stop();
         }
     };
 

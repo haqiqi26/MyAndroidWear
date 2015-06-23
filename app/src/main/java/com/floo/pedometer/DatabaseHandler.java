@@ -182,8 +182,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
-        if (cursor != null) {
-            cursor.moveToFirst();
+        if (cursor != null&&cursor.moveToFirst()) {
             Log.e("data",cursor.getString(0)+" "+cursor.getString(1));
         }
     }
@@ -245,8 +244,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, new String[]{userID});
 
-        if (cursor != null) {
-            cursor.moveToFirst();
+        if (cursor != null && cursor.moveToFirst()) {
             userBadge = new UserBadge(cursor.getString(0),cursor.getInt(1),cursor.getInt(2));
         }
         return userBadge;

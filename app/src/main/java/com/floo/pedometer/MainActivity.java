@@ -66,16 +66,16 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
                 startActivity(i);
                 createNotification();
                 //finish();*/
-                //new DoLogin().execute();
+                new DoLogin().execute();
                 //Random rand = new Random();
                 //int x = rand.nextInt(150)+150;
                 //db.addOutdoorDataToday(x);
-                UserPreferences userPreferences = new UserPreferences(MainActivity.this);
+                /*UserPreferences userPreferences = new UserPreferences(MainActivity.this);
                 userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,"1");
                 userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,"user1");
 
                 Intent i = new Intent(MainActivity.this,BluetoothActivity.class);
-                startActivity(i);
+                startActivity(i);*/
             }
         });
     }

@@ -75,6 +75,7 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
                     e.printStackTrace();
                 }
                 dataArray.put(dataObj);
+                Log.e("dataarray",dataArray.toString());
             }
         }
         // Create a new HttpClient and Post Header
