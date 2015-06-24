@@ -33,7 +33,7 @@ public class BluetoothActivity extends ActionBarActivity {
 
     private static final int REQUEST_ENABLE_BT =1;
     Button findButton;
-    TextView statusBT;
+    //TextView statusBT;
     BluetoothAdapter myBTAdapter;
     List<BluetoothDevice> pairedDevices;
     List<BluetoothDevice> newDevices;
@@ -45,14 +45,15 @@ public class BluetoothActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
         findButton= (Button)findViewById(R.id.find);
-        statusBT = (TextView)findViewById(R.id.bluetoothStatus);
+        //statusBT = (TextView)findViewById(R.id.bluetoothStatus);
         listViewPaired = (ListView)findViewById(R.id.listPairedDevices);
         listViewNew = (ListView)findViewById(R.id.listNewDevices);
 
         myBTAdapter = BluetoothAdapter.getDefaultAdapter();
         if(myBTAdapter == null)
         {
-            statusBT.setText("Status: device not supported");
+            //statusBT.setText("Status: device not supported");
+            Log.e("bluetooth","not supported");
         }
         else
         {
@@ -145,24 +146,19 @@ public class BluetoothActivity extends ActionBarActivity {
         else
         {
             Toast.makeText(BluetoothActivity.this,"Bluetooth is already on",Toast.LENGTH_LONG).show();
-            statusBT.setText("Status: Enabled");
+            //statusBT.setText("Status: Enabled");
             listPairedDevices();
-            makeDiscoverable();
+            //makeDiscoverable();
         }
     }
 
     public void listPairedDevices()
     {
         pairedDevices = new ArrayList<>(myBTAdapter.getBondedDevices());
+        BTPairedArrayAdapter.clear();
         for(BluetoothDevice device:pairedDevices) {
-            BTPairedArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+            BTPairedArrayAdapter.add(device.getName());
             Log.e("paired","addr: "+device.getAddress()+" name: "+device.getName()+" uuid: "+device.getUuids());
-            /*ParcelUuid[] test = device.getUuids();
-            for(int i=0;i<test.length;i++)
-            {
-                Log.e(device.getName(), "uuid: "+test[i].getUuid().toString());
-            }*/
-
         }
         BTPairedArrayAdapter.notifyDataSetChanged();
     }
@@ -174,13 +170,16 @@ public class BluetoothActivity extends ActionBarActivity {
 
             if(BluetoothDevice.ACTION_FOUND.equals(action))
             {
+
+                findButton.setEnabled(true);
+                findButton.setText("Find Again");
                 int newBTcount = newDevices.size();
                 boolean flag = false;
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if(newBTcount==0)
                 {
                     newDevices.add(device);
-                    BTNewArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                    BTNewArrayAdapter.add(device.getName());
                     BTNewArrayAdapter.notifyDataSetChanged();
                 }
                 else if(newBTcount>0)
@@ -195,16 +194,24 @@ public class BluetoothActivity extends ActionBarActivity {
                     if(flag)
                     {
                         newDevices.add(device);
-                        BTNewArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                        BTNewArrayAdapter.add(device.getName());
                         BTNewArrayAdapter.notifyDataSetChanged();
                     }
                 }
             }
+            else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
+            {
+                findButton.setEnabled(true);
+                findButton.setText("Find Again");
+            }
+
         }
     };
 
     public void findBT()
     {
+        findButton.setText("Searching...");
+        findButton.setEnabled(false);
         if(myBTAdapter.isDiscovering())
             myBTAdapter.cancelDiscovery();
         else
@@ -212,15 +219,11 @@ public class BluetoothActivity extends ActionBarActivity {
             BTNewArrayAdapter.clear();
             newDevices = new ArrayList<>();
             myBTAdapter.startDiscovery();
-            registerReceiver(receiver,new IntentFilter(BluetoothDevice.ACTION_FOUND));
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
+            intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+            registerReceiver(receiver, intentFilter);
         }
-    }
-
-    public void turnOffBT()
-    {
-        myBTAdapter.disable();
-        statusBT.setText("Status: Disconnected");
-        Toast.makeText(BluetoothActivity.this,"Bluetooth turned off",Toast.LENGTH_LONG).show();
     }
     public boolean createBond(BluetoothDevice btDevice)throws Exception
     {
@@ -234,20 +237,6 @@ public class BluetoothActivity extends ActionBarActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(receiver);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==REQUEST_ENABLE_BT)
-        {
-            if(myBTAdapter.isEnabled()) {
-                statusBT.setText("Status: Enabled");
-                makeDiscoverable();
-            }
-            else
-                statusBT.setText("Status: Disabled");
-        }
     }
 
     @Override

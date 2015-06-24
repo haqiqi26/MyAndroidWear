@@ -1,12 +1,18 @@
 package com.floo.pedometer;
 
 import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -39,6 +46,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
     MediaPlayer mp;
     DatabaseHandler db;
     MyTextView totalTime;
+    TextView syncInfo;
     ArrayAdapter<String>menuDrop;
     BluetoothDevice device;
     String deviceName;
@@ -63,16 +71,19 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
         menuDrop = new ArrayAdapter<String>(HomeActivity.this, android.R.layout.simple_spinner_item);
         userPreferences = new UserPreferences(HomeActivity.this);
+        syncInfo = (TextView) findViewById(R.id.syncInfo);
         deviceName = userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME);
         lastSync = userPreferences.getUserPreferences(UserPreferences.KEY_LAST_SYNC);
+        Log.e("lastsyncpref",lastSync);
         if(lastSync.equals(""))
         {
             //lastSync = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
             lastSync = "2015-06-15 10:15:00";
             userPreferences.setUserPreferences(UserPreferences.KEY_LAST_SYNC,lastSync);
         }
+        syncInfo.setText("Last Update: " + lastSync);
 
-        swipeLayout.setOnRefreshListener(this);
+        swipeLayout.setOnRefreshListener(HomeActivity.this);
         swipeLayout.setColorSchemeColors(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
@@ -92,7 +103,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         bluetoothDataService.setLastSync(lastSync);
         bluetoothDataService.connect(device,true);
 
-        db = DatabaseHandler.getInstance(this);
+        db = DatabaseHandler.getInstance(HomeActivity.this);
         progressBar.setRotation(135);
 
         int todayMinutes = db.getTodayMinutes();
@@ -132,16 +143,16 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                     db.addOutdoorDataToday(10);
                     db.addOutdoorDataToday(50);
 
-                    db.addOutdoorData(new OutdoorData("2015-06-08 11:11:11", 18));
-                    db.addOutdoorData(new OutdoorData("2015-06-07 11:11:11",50));
-                    db.addOutdoorData(new OutdoorData("2015-06-08 11:11:11",39));
-                    db.addOutdoorData(new OutdoorData("2015-06-06 11:11:11",55));
-                    db.addOutdoorData(new OutdoorData("2015-06-01 11:11:11",88));
-                    db.addOutdoorData(new OutdoorData("2015-06-02 11:11:11",91));
-                    db.addOutdoorData(new OutdoorData("2015-04-08 11:11:11",12));
-                    db.addOutdoorData(new OutdoorData("2015-02-08 11:11:11",355));
-                    db.addOutdoorData(new OutdoorData("2015-03-08 11:11:11",170));
-                    db.addOutdoorData(new OutdoorData("2015-05-08 11:11:11",150));
+                    db.addOutdoorData(new OutdoorData("2015-06-08 11:11:11", 18,0));
+                    db.addOutdoorData(new OutdoorData("2015-06-07 11:11:11",50,0));
+                    db.addOutdoorData(new OutdoorData("2015-06-08 11:11:11",39,0));
+                    db.addOutdoorData(new OutdoorData("2015-06-06 11:11:11",55,0));
+                    db.addOutdoorData(new OutdoorData("2015-06-01 11:11:11",88,0));
+                    db.addOutdoorData(new OutdoorData("2015-06-02 11:11:11",91,0));
+                    db.addOutdoorData(new OutdoorData("2015-04-08 11:11:11",12,0));
+                    db.addOutdoorData(new OutdoorData("2015-02-08 11:11:11",355,0));
+                    db.addOutdoorData(new OutdoorData("2015-03-08 11:11:11",170,0));
+                    db.addOutdoorData(new OutdoorData("2015-05-08 11:11:11",150,0));
                 }
 
 
@@ -178,6 +189,28 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         }
         totalTime.setText(Integer.toString(_todayMinutes / 60)+"h "+Integer.toString(_todayMinutes%60)+"m");
     }
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public void createNotification() {
+        // Prepare intent which is triggered if the
+        // notification is selected
+        Intent intent = new Intent(HomeActivity.this, CongratsActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+
+        Notification noti = new Notification.Builder(this)
+                .setContentTitle("Congratulations!")
+                .setContentText("You Have Won a Badge")
+                .setSmallIcon(R.drawable.home_icon)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.home_icon))
+                .setContentIntent(pIntent)
+                .build();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // hide the notification after its selected
+        noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        notificationManager.notify(0, noti);
+
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -212,6 +245,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                         Toast.makeText(HomeActivity.this, "no new data"+lastSync,Toast.LENGTH_LONG).show();
                     }
                     Log.e("handler", "done reading");
+                    syncInfo.setText("Last Update: " + lastSync);
                     swipeLayout.setRefreshing(false);
                     break;
                 //if success thread
@@ -221,8 +255,10 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
                 case BluetoothDataService.FAILED:
                     Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
+                    syncInfo.setText("Last Update: " + lastSync);
 
                     swipeLayout.setRefreshing(false);
+
 //                    bluetoothDataService.stop();
 
                     Log.e("handler", "failed");
@@ -232,6 +268,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                 //keluar sync failed
                 case BluetoothDataService.STOPPED:
                     Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
+                    syncInfo.setText("Last Update: "+lastSync);
 
                     swipeLayout.setRefreshing(false);
 //                    bluetoothDataService.stop();
@@ -244,7 +281,8 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-        swipeLayout.setRefreshing(true);
+        //swipeLayout.setRefreshing(true);
+        syncInfo.setText("Syncing...");
         bluetoothDataService = new BluetoothDataService(HomeActivity.this,mHandler);
         bluetoothDataService.setLastSync(lastSync);
         bluetoothDataService.connect(device,true);

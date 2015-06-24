@@ -87,28 +87,7 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
         return true;
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public void createNotification() {
-        // Prepare intent which is triggered if the
-        // notification is selected
-        Intent intent = new Intent(MainActivity.this, CongratsActivity.class);
-        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-
-        Notification noti = new Notification.Builder(this)
-                .setContentTitle("Congratulations!")
-                .setContentText("You Have Won a Badge")
-                .setSmallIcon(R.drawable.home_icon)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.home_icon))
-                .setContentIntent(pIntent)
-                .build();
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        // hide the notification after its selected
-        noti.flags |= Notification.FLAG_AUTO_CANCEL;
-
-        notificationManager.notify(0, noti);
-
-    }
 
     @Override
     public void onRefresh() {
@@ -199,10 +178,14 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
 
                         //Intent i = new Intent(MainActivity.this,HomeActivity.class);
                         //startActivity(i);*/
-                        createNotification();
+                        //createNotification();
                         UserPreferences userPreferences = new UserPreferences(MainActivity.this);
                         userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,reply.getString("id_user"));
                         userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,reply.getString("username"));
+                        Log.e("pref", userPreferences.getUserPreferences(UserPreferences.KEY_LAST_SYNC));
+                        Log.e("pref",userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID));
+                        Log.e("pref",userPreferences.getUserPreferences(UserPreferences.KEY_USERNAME));
+
 
 
                         Intent i = new Intent(MainActivity.this,BluetoothActivity.class);

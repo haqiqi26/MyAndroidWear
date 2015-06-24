@@ -33,7 +33,6 @@
                 android:layout_width="170dp"
                 android:layout_height="170dp"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/seed2"
                 android:id="@+id/seedImage"/>
             <TextView
                 android:layout_width="match_parent"
@@ -78,8 +77,9 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:id="@+id/imageWrapper">
-                    <ImageView
+                    android:id="@+id/imageWrapper"
+                    android:orientation="horizontal">
+                    <!--ImageView
                         android:layout_width="80dp"
                         android:layout_height="80dp"
                         android:src="@drawable/trees_grown"
@@ -183,7 +183,7 @@
                         android:layout_width="80dp"
                         android:layout_height="80dp"
                         android:src="@drawable/seed2"
-                        android:layout_gravity="center"/>
+                        android:layout_gravity="center"/-->
 
                 </LinearLayout>
             </HorizontalScrollView>

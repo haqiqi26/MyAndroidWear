@@ -18,11 +18,11 @@ public class UserPreferences {
     Context context;
     public UserPreferences(Context context){
         this.context = context;
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
     }
     public void setUserPreferences(String key,String value)
     {
-        if(key.equals(KEY_USER_ID)||key.equals(KEY_BLUETOOTH_ADDRESS)||key.equals(KEY_USERNAME)||key.equals(KEY_BLUETOOTH_NAME)) {
+        if(key.equals(KEY_USER_ID)||key.equals(KEY_BLUETOOTH_ADDRESS)||key.equals(KEY_USERNAME)||key.equals(KEY_BLUETOOTH_NAME)||key.equals(KEY_LAST_SYNC)) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(key, value);
             editor.commit();
