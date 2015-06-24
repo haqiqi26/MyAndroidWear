@@ -122,8 +122,8 @@ public class BluetoothActivity extends ActionBarActivity {
     protected void onStart() {
         super.onStart();
         turnOnBT();
-        listPairedDevices();
-        findBT();
+        //listPairedDevices();
+        //findBT();
     }
 
     private void makeDiscoverable() {
@@ -142,12 +142,14 @@ public class BluetoothActivity extends ActionBarActivity {
             startActivityForResult(turnOnIntent, REQUEST_ENABLE_BT);
             Toast.makeText(BluetoothActivity.this,"Bluetooth turned on",Toast.LENGTH_LONG).show();
             listPairedDevices();
+            findBT();
         }
         else
         {
             Toast.makeText(BluetoothActivity.this,"Bluetooth is already on",Toast.LENGTH_LONG).show();
             //statusBT.setText("Status: Enabled");
             listPairedDevices();
+            findBT();
             //makeDiscoverable();
         }
     }
@@ -173,9 +175,13 @@ public class BluetoothActivity extends ActionBarActivity {
 
                 findButton.setEnabled(true);
                 findButton.setText("Find Again");
-                int newBTcount = newDevices.size();
+                //int newBTcount = newDevices.size();
                 boolean flag = false;
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                newDevices.add(device);
+                BTNewArrayAdapter.add(device.getName());
+                BTNewArrayAdapter.notifyDataSetChanged();
+/*
                 if(newBTcount==0)
                 {
                     newDevices.add(device);
@@ -197,7 +203,7 @@ public class BluetoothActivity extends ActionBarActivity {
                         BTNewArrayAdapter.add(device.getName());
                         BTNewArrayAdapter.notifyDataSetChanged();
                     }
-                }
+                }*/
             }
             else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
             {
@@ -217,6 +223,7 @@ public class BluetoothActivity extends ActionBarActivity {
         else
         {
             BTNewArrayAdapter.clear();
+            BTNewArrayAdapter.notifyDataSetChanged();
             newDevices = new ArrayList<>();
             myBTAdapter.startDiscovery();
             IntentFilter intentFilter = new IntentFilter();
