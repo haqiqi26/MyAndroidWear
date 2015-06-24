@@ -255,7 +255,9 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
                 case BluetoothDataService.FAILED:
                     Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
+                    Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE),Toast.LENGTH_LONG);
                     syncInfo.setText("Last Update: " + lastSync);
+
 
                     swipeLayout.setRefreshing(false);
 
@@ -268,6 +270,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                 //keluar sync failed
                 case BluetoothDataService.STOPPED:
                     Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
+                    Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
                     syncInfo.setText("Last Update: "+lastSync);
 
                     swipeLayout.setRefreshing(false);

@@ -190,6 +190,13 @@ public class BluetoothDataService {
                 }
             } catch (IOException e) {
                 Log.e(TAG, "Socket Type: " + mSocketType + "create() failed", e);
+                // Send message to activity
+                Message msg = handler.obtainMessage(BluetoothDataService.FAILED);
+                Bundle bundle = new Bundle();
+                bundle.putString(BluetoothDataService.MESSAGE, "Socket Type: " + mSocketType + "create() failed");
+                msg.setData(bundle);
+                handler.sendMessage(msg);
+
             }
             mmSocket = tmp;
         }
@@ -211,6 +218,12 @@ public class BluetoothDataService {
                 Log.e(TAG, e.toString());
                 // Close the socket
                 try {
+                    // Send message to activity
+                    Message msg = handler.obtainMessage(BluetoothDataService.FAILED);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(BluetoothDataService.MESSAGE, "unable to connect");
+                    msg.setData(bundle);
+                    handler.sendMessage(msg);
                     mmSocket.close();
                     /*try {
                         mmSocket = (BluetoothSocket) mmDevice.getClass().getMethod("createRfcommSocket", new Class[]{int.class}).invoke(mmDevice, 1);
@@ -229,6 +242,7 @@ public class BluetoothDataService {
                         mConnectedThread.cancel();
                         mConnectedThread = null;
                     }
+
                 } catch (IOException i2) {
                     Log.e(TAG, "unable to close() " + mSocketType +
                             " socket during connection failure", i2);
@@ -259,6 +273,12 @@ public class BluetoothDataService {
                 mmSocket.close();
             } catch (IOException e) {
                 Log.e(TAG, "close() of connect " + mSocketType + " socket failed", e);
+                Message msg = handler.obtainMessage(BluetoothDataService.FAILED);
+                Bundle bundle = new Bundle();
+                bundle.putString(BluetoothDataService.MESSAGE, "unable to close() " + mSocketType +
+                        " socket during connection failure");
+                msg.setData(bundle);
+                handler.sendMessage(msg);
             }
         }
     }
@@ -286,6 +306,11 @@ public class BluetoothDataService {
 
             } catch (IOException e) {
                 Log.e(TAG, "temp sockets not created", e);
+                Message msg = handler.obtainMessage(BluetoothDataService.FAILED);
+                Bundle bundle = new Bundle();
+                bundle.putString(BluetoothDataService.MESSAGE, "temp sockets not created");
+                msg.setData(bundle);
+                handler.sendMessage(msg);
             }
 
             mmInStream = tmpIn;
@@ -334,6 +359,11 @@ public class BluetoothDataService {
                     mmDinput.readFully(pdu);
                 }catch (IOException e){
                     Log.e(TAG, e.getMessage());
+                    Message msg = handler.obtainMessage(BluetoothDataService.FAILED);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(BluetoothDataService.MESSAGE, e.getMessage());
+                    msg.setData(bundle);
+                    handler.sendMessage(msg);
                 }
                 ByteBuffer bb=ByteBuffer.wrap(pdu);
                 long timepoint=bb.getLong();
@@ -397,6 +427,11 @@ public class BluetoothDataService {
                         .sendToTarget();*/
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);
+                Message msg = handler.obtainMessage(BluetoothDataService.FAILED);
+                Bundle bundle = new Bundle();
+                bundle.putString(BluetoothDataService.MESSAGE, "Exception during write");
+                msg.setData(bundle);
+                handler.sendMessage(msg);
             }
         }
 
@@ -405,6 +440,12 @@ public class BluetoothDataService {
                 mmSocket.close();
             } catch (IOException e) {
                 Log.e(TAG, "close() of connect socket failed", e);
+                Message msg = handler.obtainMessage(BluetoothDataService.FAILED);
+                Bundle bundle = new Bundle();
+                bundle.putString(BluetoothDataService.MESSAGE, "close() of connect socket failed");
+                msg.setData(bundle);
+                handler.sendMessage(msg);
+
             }
         }
 
