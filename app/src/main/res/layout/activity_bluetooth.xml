@@ -96,7 +96,7 @@
         <ListView
             android:id="@+id/listPairedDevices"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:divider="@color/blue"
             android:dividerHeight="1dp">
         </ListView>
@@ -115,7 +115,7 @@
         <ListView
             android:id="@+id/listNewDevices"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:divider="@color/blue"
             android:dividerHeight="1dp">
         </ListView>

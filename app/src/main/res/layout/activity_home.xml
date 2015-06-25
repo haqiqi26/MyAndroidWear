@@ -4,11 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipeRefresh"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin">
+    android:layout_height="match_parent">
 <LinearLayout android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,33 +13,34 @@
     android:background="@color/lightgrey"
     android:soundEffectsEnabled="true">
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="5">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/spinnerDevices"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Last Sync"
-                android:textColor="@android:color/black"
-                android:gravity="center"
-                android:id="@+id/syncInfo"/>
-        </RelativeLayout>
-    </LinearLayout>
-    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="75">
+        android:layout_weight="80">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/p1">
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinnerDevices"
+                android:layout_alignParentTop="true"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pull Down to Request"
+                android:textColor="@android:color/black"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/pullInfo"
+                android:layout_below="@+id/spinnerDevices"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Last Sync"
+                android:textColor="@android:color/black"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/syncInfo"
+                android:layout_below="@+id/pullInfo"/>
             <com.floo.pedometer.MyTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

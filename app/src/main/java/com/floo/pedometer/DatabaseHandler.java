@@ -251,7 +251,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     public List<UserBadge> getAllUserBadges()
     {
-        List<UserBadge> userBadges= new ArrayList<>();
+        List<UserBadge> userBadges= new ArrayList<UserBadge>();
         // Select All Query
         String selectQuery = "SELECT * FROM " + TABLE_USER_BADGES;
 

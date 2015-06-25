@@ -43,7 +43,7 @@ public class ChartActivity extends ActionBarActivity {
        // setContentView(R.layout.graph_image);
 
         String days[] = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
-        pb = new ArrayList<>();
+        pb = new ArrayList<ProgressBar>();
         db = DatabaseHandler.getInstance(this);
 
         layout = (RelativeLayout) findViewById(R.id.relative);

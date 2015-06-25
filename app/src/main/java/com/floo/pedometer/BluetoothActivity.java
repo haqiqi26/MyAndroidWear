@@ -64,8 +64,8 @@ public class BluetoothActivity extends ActionBarActivity {
                 }
             });
 
-            BTPairedArrayAdapter = new ArrayAdapter<>(BluetoothActivity.this,R.layout.list_row);
-            BTNewArrayAdapter = new ArrayAdapter<>(BluetoothActivity.this,R.layout.list_row);
+            BTPairedArrayAdapter = new ArrayAdapter<String>(BluetoothActivity.this,R.layout.list_row);
+            BTNewArrayAdapter = new ArrayAdapter<String>(BluetoothActivity.this,R.layout.list_row);
 
             listViewPaired.setAdapter(BTPairedArrayAdapter);
             listViewPaired.setOnItemClickListener(new AdapterView.OnItemClickListener() {
