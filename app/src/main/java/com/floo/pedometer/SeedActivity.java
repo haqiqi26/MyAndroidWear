@@ -37,7 +37,7 @@ public class SeedActivity extends ActionBarActivity {
         UserTree tree = db.getUserTree(id);
         if(tree==null)
         {
-            db.addUserTreeData(new UserTree(id,4,1));
+            db.addUserTreeData(new UserTree(id,0,0));
             tree = db.getUserTree(id);
         }
         for(int i=0;i<tree.getTreesCompleted();i++)

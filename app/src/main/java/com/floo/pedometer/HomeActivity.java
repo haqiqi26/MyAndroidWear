@@ -2,6 +2,7 @@ package com.floo.pedometer;
 
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -84,7 +85,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         syncInfo.setText("Last Update: " + lastSync);
 
         swipeLayout.setOnRefreshListener(HomeActivity.this);
-        swipeLayout.setColorSchemeColors(android.R.color.holo_blue_bright,
+        swipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
@@ -132,11 +133,11 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
                 if(db.getUserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID))==null)
                 {
-                    db.addUserBadgeData(new UserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID), 0, 12));
+                    db.addUserBadgeData(new UserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID), 0, 0));
 //                    db.addUserBadgeData(new UserBadge("2", 2, 10));
   //                  db.addUserBadgeData(new UserBadge("3",4,5));
                 }
-
+/*
                 if(db.getAllOutdoorsDatas().size()==0)
                 {
                     db.addOutdoorDataToday(5);
@@ -154,7 +155,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                     db.addOutdoorData(new OutdoorData("2015-03-08 11:11:11",170,0));
                     db.addOutdoorData(new OutdoorData("2015-05-08 11:11:11",150,0));
                 }
-
+*/
 
                 Intent i = new Intent(HomeActivity.this,ChartActivity.class);
                 //i.putExtra("anim id in", R.anim.up_in);
@@ -255,10 +256,15 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
                 case BluetoothDataService.FAILED:
                     Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
-                    Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE),Toast.LENGTH_LONG);
+                    Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
                     syncInfo.setText("Last Update: " + lastSync);
 
                     swipeLayout.setRefreshing(false);
+                    AlertDialog alertDialog = new AlertDialog.Builder(HomeActivity.this).create();
+                    alertDialog.setTitle("Oooppss!!");
+                    alertDialog.setMessage("Something's wrong\nPlease try again");
+                    alertDialog.setCanceledOnTouchOutside(true);
+                    alertDialog.show();
 
 //                    bluetoothDataService.stop();
 
@@ -283,7 +289,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-        swipeLayout.setRefreshing(true);
+        //swipeLayout.setRefreshing(true);
         syncInfo.setText("Syncing...");
         bluetoothDataService = new BluetoothDataService(HomeActivity.this,mHandler);
         bluetoothDataService.setLastSync(lastSync);

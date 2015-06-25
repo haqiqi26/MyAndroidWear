@@ -18,7 +18,10 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -42,7 +45,7 @@ public class ChartActivity extends ActionBarActivity {
         setContentView(R.layout.activity_chart);
        // setContentView(R.layout.graph_image);
 
-        String days[] = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
+        //String days[] = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
         pb = new ArrayList<ProgressBar>();
         db = DatabaseHandler.getInstance(this);
 
@@ -86,8 +89,20 @@ public class ChartActivity extends ActionBarActivity {
             int x = rand.nextInt(360);
             //val.add(x);
 
+            SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = null;
+            String days="";
+            try {
+                date = inFormat.parse(outdoorData.getTimeStamp());
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            SimpleDateFormat outFormat = new SimpleDateFormat("EEE");
+            days = outFormat.format(date);
+
             String myDate[] = outdoorData.getTimeStamp().split("-");
-            day.setText(days[x % 7] + "\n" + myDate[2] + "/" + myDate[1]);
+            day.setText(days + "\n" + myDate[2] + "/" + myDate[1]);
 
             day.setTextSize(10);
             day.setGravity(Gravity.CENTER);
@@ -147,19 +162,19 @@ public class ChartActivity extends ActionBarActivity {
                             myHeight);
 
                     if(totalMinutes<=90) {
-                        params3.setMargins(myWidth + (int) Math.round(endChartWidth), (myHeight+14) * j, 0, 0);
+                        params3.setMargins(myWidth + (int) Math.round(endChartWidth), ((myHeight+10) * j)+14, 0, 0);
                         tv.setGravity(Gravity.CENTER_VERTICAL);
                         layout.addView(tv, params3);
                     }
                     else if(totalMinutes>=350)
                     {
-                        params3.setMargins(myWidth , (myHeight+14) * j, linearWidth - (int) Math.round(endChartWidth)-100, 0);
+                        params3.setMargins(myWidth , ((myHeight+10) * j)+14, linearWidth - (int) Math.round(endChartWidth)-100, 0);
                         tv.setGravity(Gravity.END|Gravity.CENTER_VERTICAL);
                         layout.addView(tv, params3);
                     }
                     else
                     {
-                        params3.setMargins(myWidth , (myHeight+14) * j, linearWidth - (int) Math.round(endChartWidth), 0);
+                        params3.setMargins(myWidth , ((myHeight+10) * j)+14, linearWidth - (int) Math.round(endChartWidth), 0);
                         tv.setGravity(Gravity.END|Gravity.CENTER_VERTICAL);
                         layout.addView(tv, params3);
                     }
@@ -196,8 +211,8 @@ public class ChartActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
 
-        db.truncateOutdoorTable();
-        db.truncateUserBadgeTable();
+        //db.truncateOutdoorTable();
+        //db.truncateUserBadgeTable();
         this.finish();
         /*overridePendingTransition(
                 getIntent().getIntExtra("anim id in", R.anim.left_in),

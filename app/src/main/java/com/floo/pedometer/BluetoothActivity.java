@@ -1,5 +1,6 @@
 package com.floo.pedometer;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -141,8 +142,6 @@ public class BluetoothActivity extends ActionBarActivity {
             Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(turnOnIntent, REQUEST_ENABLE_BT);
             Toast.makeText(BluetoothActivity.this,"Bluetooth turned on",Toast.LENGTH_LONG).show();
-            listPairedDevices();
-            findBT();
         }
         else
         {
@@ -175,13 +174,13 @@ public class BluetoothActivity extends ActionBarActivity {
 
                 findButton.setEnabled(true);
                 findButton.setText("Find Again");
-                //int newBTcount = newDevices.size();
+                int newBTcount = newDevices.size();
                 boolean flag = false;
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                newDevices.add(device);
-                BTNewArrayAdapter.add(device.getName());
-                BTNewArrayAdapter.notifyDataSetChanged();
-/*
+                //newDevices.add(device);
+                //BTNewArrayAdapter.add(device.getName());
+                //BTNewArrayAdapter.notifyDataSetChanged();
+
                 if(newBTcount==0)
                 {
                     newDevices.add(device);
@@ -192,9 +191,11 @@ public class BluetoothActivity extends ActionBarActivity {
                 {
                     for(BluetoothDevice bt:newDevices)
                     {
-                        if(!bt.getAddress().equals(device.getAddress()))
+                        flag=true;
+                        if(bt.getAddress().equals(device.getAddress()))
                         {
-                            flag=true;
+                            flag=false;
+                            break;
                         }
                     }
                     if(flag)
@@ -203,7 +204,7 @@ public class BluetoothActivity extends ActionBarActivity {
                         BTNewArrayAdapter.add(device.getName());
                         BTNewArrayAdapter.notifyDataSetChanged();
                     }
-                }*/
+                }
             }
             else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
             {
@@ -213,6 +214,19 @@ public class BluetoothActivity extends ActionBarActivity {
 
         }
     };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==REQUEST_ENABLE_BT)
+        {
+            if(resultCode== Activity.RESULT_OK)
+            {
+                listPairedDevices();
+                findBT();
+            }
+        }
+    }
 
     public void findBT()
     {

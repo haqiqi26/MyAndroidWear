@@ -1,10 +1,12 @@
 package com.floo.pedometer;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -42,7 +44,7 @@ import java.util.List;
 import java.util.Random;
 
 
-public class MainActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends ActionBarActivity{
     DatabaseHandler db;
     Button login;
     SwipeRefreshLayout refreshLayout;
@@ -55,9 +57,6 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
         pass = (EditText)findViewById(R.id.userPass);
         db = DatabaseHandler.getInstance(this);
         login = (Button) findViewById(R.id.loginButton);
-        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refreshLayout);
-        refreshLayout.setColorSchemeColors(R.color.orange,R.color.green,R.color.red);
-        refreshLayout.setOnRefreshListener(this);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,15 +84,6 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
-    }
-
-
-
-    @Override
-    public void onRefresh() {
-
-        Toast.makeText(MainActivity.this,"Refreshing",Toast.LENGTH_LONG).show();
-        refreshLayout.setRefreshing(false);
     }
 
     private class DoLogin extends AsyncTask<String,Void,String>{
@@ -195,6 +185,11 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
                     else if(valid==0)
                     {
                         Log.e("result", "not exist");
+                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                        alertDialog.setTitle("Oooppss!!");
+                        alertDialog.setMessage("Please check your username and password");
+                        alertDialog.setCanceledOnTouchOutside(true);
+                        alertDialog.show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -202,6 +197,11 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
             }
             else{
                 Log.e("result", "Please Try Again");
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setTitle("Oooppss!!");
+                alertDialog.setMessage("Something's wrong\nPlease try again");
+                alertDialog.setCanceledOnTouchOutside(true);
+                alertDialog.show();
             }
         }
     }
