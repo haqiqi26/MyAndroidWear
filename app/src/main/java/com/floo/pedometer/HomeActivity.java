@@ -258,7 +258,6 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                     Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE),Toast.LENGTH_LONG);
                     syncInfo.setText("Last Update: " + lastSync);
 
-
                     swipeLayout.setRefreshing(false);
 
 //                    bluetoothDataService.stop();
