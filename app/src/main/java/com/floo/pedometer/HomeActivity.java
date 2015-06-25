@@ -284,7 +284,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
     @Override
     public void onRefresh() {
-        //swipeLayout.setRefreshing(true);
+        swipeLayout.setRefreshing(true);
         syncInfo.setText("Syncing...");
         bluetoothDataService = new BluetoothDataService(HomeActivity.this,mHandler);
         bluetoothDataService.setLastSync(lastSync);
