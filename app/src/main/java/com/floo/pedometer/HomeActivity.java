@@ -8,6 +8,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -260,10 +261,17 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                     syncInfo.setText("Last Update: " + lastSync);
 
                     swipeLayout.setRefreshing(false);
-                    AlertDialog alertDialog = new AlertDialog.Builder(HomeActivity.this).create();
+                    AlertDialog.Builder builder =  new AlertDialog.Builder(HomeActivity.this);
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alertDialog = builder.create();
                     alertDialog.setTitle("Oooppss!!");
                     alertDialog.setMessage("Something's wrong\nPlease try again");
-                    alertDialog.setCanceledOnTouchOutside(true);
+                    alertDialog.setCanceledOnTouchOutside(false);
                     alertDialog.show();
 
 //                    bluetoothDataService.stop();

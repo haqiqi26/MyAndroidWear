@@ -94,12 +94,12 @@ public class ChartActivity extends ActionBarActivity {
             String days="";
             try {
                 date = inFormat.parse(outdoorData.getTimeStamp());
+                SimpleDateFormat outFormat = new SimpleDateFormat("EEE");
+                days = outFormat.format(date);
 
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            SimpleDateFormat outFormat = new SimpleDateFormat("EEE");
-            days = outFormat.format(date);
 
             String myDate[] = outdoorData.getTimeStamp().split("-");
             day.setText(days + "\n" + myDate[2] + "/" + myDate[1]);

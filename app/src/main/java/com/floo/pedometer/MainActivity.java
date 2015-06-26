@@ -185,10 +185,17 @@ public class MainActivity extends ActionBarActivity{
                     else if(valid==0)
                     {
                         Log.e("result", "not exist");
-                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                        AlertDialog.Builder builder =  new AlertDialog.Builder(MainActivity.this);
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        AlertDialog alertDialog = builder.create();
                         alertDialog.setTitle("Oooppss!!");
                         alertDialog.setMessage("Please check your username and password");
-                        alertDialog.setCanceledOnTouchOutside(true);
+                        alertDialog.setCanceledOnTouchOutside(false);
                         alertDialog.show();
                     }
                 } catch (JSONException e) {
@@ -197,10 +204,17 @@ public class MainActivity extends ActionBarActivity{
             }
             else{
                 Log.e("result", "Please Try Again");
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                AlertDialog.Builder builder =  new AlertDialog.Builder(MainActivity.this);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alertDialog = builder.create();
                 alertDialog.setTitle("Oooppss!!");
                 alertDialog.setMessage("Something's wrong\nPlease try again");
-                alertDialog.setCanceledOnTouchOutside(true);
+                alertDialog.setCanceledOnTouchOutside(false);
                 alertDialog.show();
             }
         }
