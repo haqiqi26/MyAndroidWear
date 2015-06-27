@@ -37,6 +37,7 @@ public class ChartActivity extends ActionBarActivity {
     DatabaseHandler db;
     int myWidth =100;
     int myHeight =100;
+    UserPreferences userPreferences;
 
 
     @Override
@@ -54,7 +55,7 @@ public class ChartActivity extends ActionBarActivity {
         platinumCount = (TextView) findViewById(R.id.platinumCount);
         goldCount = (TextView) findViewById(R.id.goldCount);
 
-        UserPreferences userPreferences = new UserPreferences(ChartActivity.this);
+        userPreferences = new UserPreferences(ChartActivity.this);
         UserBadge userBadge = db.getUserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID));
         outdoorDataList  = db.getAllOutdoorsDatas();
 
@@ -89,11 +90,11 @@ public class ChartActivity extends ActionBarActivity {
             int x = rand.nextInt(360);
             //val.add(x);
 
-            SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = null;
+            SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd");
+
             String days="";
             try {
-                date = inFormat.parse(outdoorData.getTimeStamp());
+                Date date = inFormat.parse(outdoorData.getTimeStamp());
                 SimpleDateFormat outFormat = new SimpleDateFormat("EEE");
                 days = outFormat.format(date);
 
@@ -183,6 +184,25 @@ public class ChartActivity extends ActionBarActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
+
     }
 
     @Override

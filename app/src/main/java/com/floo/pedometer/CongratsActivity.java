@@ -24,15 +24,16 @@ public class CongratsActivity extends ActionBarActivity {
         homeButton = (ImageView) findViewById(R.id.homeButton);
         badge= (ImageView) findViewById(R.id.badgeImage);
         congratsMessage = (TextView) findViewById(R.id.congratsMessage);
+        int GOLD=1,PLATINUM=2;
+        String BADGE_TYPE = "badgeType";
 
-        Random rand = new Random();
+        int x = getIntent().getExtras().getInt(BADGE_TYPE);
 
-        int x = rand.nextInt(10)%2;
-        if(x==1){//platinum
+        if(x==PLATINUM){//platinum
             badge.setImageResource(R.drawable.platinum_badge);
             congratsMessage.setText("Congratulations! You Have\nWon a Platinum Badge\nThis Week");
         }
-        else{
+        else if(x==GOLD){
             badge.setImageResource(R.drawable.gold_badge);
             congratsMessage.setText("Congratulations! You Have\nWon a Gold Badge\nToday");
         }
@@ -40,10 +41,19 @@ public class CongratsActivity extends ActionBarActivity {
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(CongratsActivity.this,MainActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-                finish();
+                UserPreferences pref = new UserPreferences(CongratsActivity.this);
+                if(pref.getUserPreferences(UserPreferences.KEY_APP_STATE).equals(UserPreferences.APP_RUNNING))
+                {
+                    finish();
+                }
+                else if(pref.getUserPreferences(UserPreferences.KEY_APP_STATE).equals(UserPreferences.APP_NOT_RUNNING))
+                {
+                    Intent i = new Intent(CongratsActivity.this,MainActivity.class);
+                    startActivity(i);
+                    finish();
+                }
+
+
             }
         });
 

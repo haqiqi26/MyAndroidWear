@@ -40,6 +40,7 @@ public class BluetoothActivity extends ActionBarActivity {
     List<BluetoothDevice> newDevices;
     ListView listViewPaired,listViewNew;
     ArrayAdapter<String> BTPairedArrayAdapter,BTNewArrayAdapter;
+    UserPreferences userPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,9 @@ public class BluetoothActivity extends ActionBarActivity {
         //statusBT = (TextView)findViewById(R.id.bluetoothStatus);
         listViewPaired = (ListView)findViewById(R.id.listPairedDevices);
         listViewNew = (ListView)findViewById(R.id.listNewDevices);
+
+        userPreferences = new UserPreferences(BluetoothActivity.this);
+
 
         myBTAdapter = BluetoothAdapter.getDefaultAdapter();
         if(myBTAdapter == null)
@@ -73,7 +77,6 @@ public class BluetoothActivity extends ActionBarActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                    UserPreferences userPreferences= new UserPreferences(BluetoothActivity.this);
                     userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS,pairedDevices.get(position).getAddress());
                     userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME,pairedDevices.get(position).getName());
 
@@ -82,6 +85,7 @@ public class BluetoothActivity extends ActionBarActivity {
                     Intent i = new Intent(BluetoothActivity.this,HomeActivity.class);
                     i.putExtra("selectedDevice", pairedDevices.get(position));
                     startActivity(i);
+                    finish();
 
                 }
             });
@@ -89,7 +93,6 @@ public class BluetoothActivity extends ActionBarActivity {
             listViewNew.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    UserPreferences userPreferences= new UserPreferences(BluetoothActivity.this);
                     userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS,newDevices.get(position).getAddress());
                     userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME,newDevices.get(position).getName());
                     try {
@@ -108,6 +111,7 @@ public class BluetoothActivity extends ActionBarActivity {
                         Intent i = new Intent(BluetoothActivity.this,HomeActivity.class);
                         i.putExtra("selectedDevice",newDevices.get(position));
                         startActivity(i);
+                        finish();
 
 
                     } catch (Exception e) {
@@ -122,6 +126,8 @@ public class BluetoothActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
+
         turnOnBT();
         //listPairedDevices();
         //findBT();
@@ -255,8 +261,16 @@ public class BluetoothActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
+
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
         unregisterReceiver(receiver);
     }
 

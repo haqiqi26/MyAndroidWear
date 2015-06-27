@@ -18,6 +18,7 @@ public class SeedActivity extends ActionBarActivity {
     LinearLayout imageWrapper;
     DatabaseHandler db;
     UserPreferences userPreferences;
+    int[] seedSource;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +26,18 @@ public class SeedActivity extends ActionBarActivity {
         backText = (ImageView) findViewById(R.id.seedBackButton);
         seedImage = (ImageView) findViewById(R.id.seedImage);
         imageWrapper = (LinearLayout) findViewById(R.id.imageWrapper);
+        seedSource = new int[]{
+                R.drawable.seeds1,
+                R.drawable.seeds2,
+                R.drawable.seeds3,
+                R.drawable.seeds4,
+                R.drawable.seeds5,
+                R.drawable.seeds6,
+                R.drawable.seeds7,
+                R.drawable.seeds8,
+                R.drawable.seeds9,
+                R.drawable.seeds10
+        };
         backText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -37,22 +50,16 @@ public class SeedActivity extends ActionBarActivity {
         UserTree tree = db.getUserTree(id);
         if(tree==null)
         {
-            db.addUserTreeData(new UserTree(id,0,0));
-            tree = db.getUserTree(id);
+            tree = new UserTree(id,0,0);
+            db.addUserTreeData(tree);
         }
         for(int i=0;i<tree.getTreesCompleted();i++)
         {
-            addImageTrees(R.drawable.trees_grown);
+            addImageTrees(seedSource[9]);
         }
         int lastState = tree.getLastTreeProgress();
-
-        if(lastState==1)
-        {
-            addImageTrees(R.drawable.seed2);
-            seedImage.setImageResource(R.drawable.seed2);
-        }
-
-
+        addImageTrees(seedSource[lastState]);
+        seedImage.setImageResource(seedSource[lastState]);
     }
 
     @Override
@@ -60,6 +67,18 @@ public class SeedActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_seed, menu);
         return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
     }
 
     void addImageTrees(int resId)

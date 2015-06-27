@@ -1,11 +1,14 @@
 package com.floo.pedometer;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -48,11 +51,16 @@ public class MainActivity extends ActionBarActivity{
     DatabaseHandler db;
     Button login;
     SwipeRefreshLayout refreshLayout;
+    UserPreferences pref;
     EditText username,pass;
+    BluetoothAdapter bluetoothAdapter;
+    private static final int REQUEST_ENABLE_BT =1;
+    String bluetoothAddr;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        pref= new UserPreferences(MainActivity.this);
         username = (EditText) findViewById(R.id.userName);
         pass = (EditText)findViewById(R.id.userPass);
         db = DatabaseHandler.getInstance(this);
@@ -77,6 +85,79 @@ public class MainActivity extends ActionBarActivity{
                 startActivity(i);*/
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        pref.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
+        String userID = pref.getUserPreferences(UserPreferences.KEY_USER_ID);
+        String username = pref.getUserPreferences(UserPreferences.KEY_USERNAME);
+        bluetoothAddr = pref.getUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS);
+        String bluetoothName = pref.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME);
+
+        if(!userID.equals("")&&!username.equals("")&&!bluetoothAddr.equals("")&&!bluetoothName.equals(""))
+        {
+            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if(bluetoothAdapter==null){
+                AlertDialog.Builder builder =  new AlertDialog.Builder(MainActivity.this);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        MainActivity.this.finish();
+                    }
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.setTitle("Oooppss!!");
+                alertDialog.setMessage("Bluetooth not supported");
+                alertDialog.setCanceledOnTouchOutside(false);
+                alertDialog.show();
+            }
+            else {
+                turnOnBTandSwitch();
+            }
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        pref.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
+
+    }
+
+    public void turnOnBTandSwitch()
+    {
+        if(!bluetoothAdapter.isEnabled())
+        {
+            Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(turnOnIntent, REQUEST_ENABLE_BT);
+            Toast.makeText(MainActivity.this,"Bluetooth turned on",Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            Toast.makeText(MainActivity.this,"Bluetooth is already on",Toast.LENGTH_LONG).show();
+            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(bluetoothAddr);
+            Intent i = new Intent(MainActivity.this,HomeActivity.class);
+            i.putExtra("selectedDevice",device);
+            startActivity(i);
+            finish();
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==REQUEST_ENABLE_BT)
+        {
+            if(resultCode== Activity.RESULT_OK)
+            {
+                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(bluetoothAddr);
+                Intent i = new Intent(MainActivity.this,HomeActivity.class);
+                i.putExtra("selectedDevice",device);
+                startActivity(i);
+            }
+        }
     }
 
     @Override
@@ -144,8 +225,7 @@ public class MainActivity extends ActionBarActivity{
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if(progressDialog.isShowing())
-                progressDialog.dismiss();
+
 
             if(!result.equals(""))
             {
@@ -171,7 +251,7 @@ public class MainActivity extends ActionBarActivity{
                         //createNotification();
                         UserPreferences userPreferences = new UserPreferences(MainActivity.this);
                         userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,reply.getString("id_user"));
-                        userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,reply.getString("username"));
+                        userPreferences.setUserPreferences(UserPreferences.KEY_USERNAME,reply.getString("username"));
                         Log.e("pref", userPreferences.getUserPreferences(UserPreferences.KEY_LAST_SYNC));
                         Log.e("pref",userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID));
                         Log.e("pref",userPreferences.getUserPreferences(UserPreferences.KEY_USERNAME));
@@ -180,11 +260,15 @@ public class MainActivity extends ActionBarActivity{
 
                         Intent i = new Intent(MainActivity.this,BluetoothActivity.class);
                         startActivity(i);
+                        if(progressDialog.isShowing())
+                            progressDialog.dismiss();
 
                     }
                     else if(valid==0)
                     {
                         Log.e("result", "not exist");
+                        if(progressDialog.isShowing())
+                            progressDialog.dismiss();
                         AlertDialog.Builder builder =  new AlertDialog.Builder(MainActivity.this);
                         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
@@ -200,10 +284,14 @@ public class MainActivity extends ActionBarActivity{
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    if(progressDialog.isShowing())
+                        progressDialog.dismiss();
                 }
             }
             else{
                 Log.e("result", "Please Try Again");
+                if(progressDialog.isShowing())
+                    progressDialog.dismiss();
                 AlertDialog.Builder builder =  new AlertDialog.Builder(MainActivity.this);
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -219,10 +307,11 @@ public class MainActivity extends ActionBarActivity{
             }
         }
     }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        db.truncateOutdoorTable();
+        //db.truncateOutdoorTable();
         this.finish();
 
     }

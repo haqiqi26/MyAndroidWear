@@ -14,7 +14,8 @@
         <activity
             android:name=".MainActivity"
             android:hardwareAccelerated="true"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,26 +25,28 @@
         <activity
             android:name=".HomeActivity"
             android:hardwareAccelerated="true"
-            android:label="@string/title_activity_webview_kit"
+            android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".ChartActivity"
             android:hardwareAccelerated="true"
-            android:label="@string/title_activity_chart"
+            android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".SeedActivity"
-            android:label="@string/title_activity_seed" >
+            android:label="@string/app_name" >
         </activity>
         <activity
             android:name=".CongratsActivity"
-            android:label="@string/title_activity_congrats" >
+            android:label="@string/app_name"
+            android:launchMode="singleInstance">
         </activity>
         <activity
             android:name=".BluetoothActivity"
-            android:label="@string/title_activity_bluetooth" >
+            android:label="@string/app_name"
+            android:launchMode="singleInstance" >
         </activity>
     </application>
 

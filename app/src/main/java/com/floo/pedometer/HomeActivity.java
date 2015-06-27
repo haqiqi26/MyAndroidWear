@@ -20,13 +20,17 @@ import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.transition.Visibility;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,12 +47,12 @@ import java.util.UUID;
 public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     ProgressBar progressBar;
-    ImageButton chartButton,seedButton;
+    ImageButton chartButton,seedButton,homeButton;
     Spinner spinner;
     MediaPlayer mp;
     DatabaseHandler db;
-    MyTextView totalTime;
-    TextView syncInfo;
+    MyTextView totalTime,textHome,tm;
+    TextView syncInfo,pullInfo,adviceMessage;
     ArrayAdapter<String>menuDrop;
     BluetoothDevice device;
     String deviceName;
@@ -56,6 +60,9 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
     BluetoothDataService bluetoothDataService;
     String lastSync;
     UserPreferences userPreferences;
+
+    RelativeLayout RBLeft,RBRight,RBCenter;
+    LinearLayout linerHead,chartWrapper;
     //int todayMinutes;
 
 
@@ -68,12 +75,29 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         progressBar = (ProgressBar) findViewById(R.id.myProgress);
         chartButton = (ImageButton) findViewById(R.id.chartButton);
         seedButton = (ImageButton) findViewById(R.id.seedButton);
+        homeButton = (ImageButton) findViewById(R.id.home);
+
         totalTime = (MyTextView) findViewById(R.id.progressText);
+        textHome = (MyTextView) findViewById(R.id.textHome);
+        tm = (MyTextView) findViewById(R.id.tm);
+
         spinner = (Spinner) findViewById(R.id.spinnerDevices);
         swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
         menuDrop = new ArrayAdapter<String>(HomeActivity.this, android.R.layout.simple_spinner_item);
         userPreferences = new UserPreferences(HomeActivity.this);
         syncInfo = (TextView) findViewById(R.id.syncInfo);
+        pullInfo = (TextView) findViewById(R.id.pullInfo);
+        adviceMessage = (TextView) findViewById(R.id.adviceMessage);
+
+
+        linerHead = (LinearLayout)findViewById(R.id.linearTop);
+        chartWrapper = (LinearLayout)findViewById(R.id.linearWrapper);
+
+        RBLeft = (RelativeLayout)findViewById(R.id.RBLeft);
+        RBRight = (RelativeLayout)findViewById(R.id.RBRight);
+        RBCenter = (RelativeLayout)findViewById(R.id.RBCenter);
+
+
         deviceName = userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME);
         lastSync = userPreferences.getUserPreferences(UserPreferences.KEY_LAST_SYNC);
         Log.e("lastsyncpref",lastSync);
@@ -90,7 +114,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-        //swipeLayout.setRefreshing(true);
+
 
         if(deviceName!=null||deviceName.equals(""))
             menuDrop.add(deviceName);
@@ -101,17 +125,20 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
         device = getIntent().getExtras().getParcelable("selectedDevice");
 
-        bluetoothDataService = new BluetoothDataService(HomeActivity.this,mHandler);
-        bluetoothDataService.setLastSync(lastSync);
-        bluetoothDataService.connect(device,true);
-
+        swipeLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeLayout.setRefreshing(true);
+                onRefresh();
+            }
+        });
         db = DatabaseHandler.getInstance(HomeActivity.this);
         progressBar.setRotation(135);
 
-        int todayMinutes = db.getTodayMinutes();
-        Log.e("minute", Integer.toString(todayMinutes));
+        //int todayMinutes = db.getTodayMinutes();
+        //Log.e("minute", Integer.toString(todayMinutes));
         //int todayMinutes = 188;
-        startProgressAnim(todayMinutes);
+        //startProgressAnim(todayMinutes);
 
         seedButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,6 +153,23 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
             }
         });
 
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RBLeft.setVisibility(View.VISIBLE);
+                RBRight.setVisibility(View.VISIBLE);
+                RBCenter.setVisibility(View.GONE);
+                pullInfo.setVisibility(View.VISIBLE);
+                textHome.setVisibility(View.VISIBLE);
+                tm.setVisibility(View.VISIBLE);
+                syncInfo.setVisibility(View.VISIBLE);
+                linerHead.setVisibility(View.VISIBLE);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,75);
+                chartWrapper.setLayoutParams(params);
+                adviceMessage.setVisibility(View.GONE);
+            }
+        });
+
 
         chartButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,34 +179,11 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                 if(db.getUserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID))==null)
                 {
                     db.addUserBadgeData(new UserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID), 0, 0));
-//                    db.addUserBadgeData(new UserBadge("2", 2, 10));
-  //                  db.addUserBadgeData(new UserBadge("3",4,5));
                 }
-/*
-                if(db.getAllOutdoorsDatas().size()==0)
-                {
-                    db.addOutdoorDataToday(5);
-                    db.addOutdoorDataToday(10);
-                    db.addOutdoorDataToday(50);
 
-                    db.addOutdoorData(new OutdoorData("2015-06-08 11:11:11", 18,0));
-                    db.addOutdoorData(new OutdoorData("2015-06-07 11:11:11",50,0));
-                    db.addOutdoorData(new OutdoorData("2015-06-08 11:11:11",39,0));
-                    db.addOutdoorData(new OutdoorData("2015-06-06 11:11:11",55,0));
-                    db.addOutdoorData(new OutdoorData("2015-06-01 11:11:11",88,0));
-                    db.addOutdoorData(new OutdoorData("2015-06-02 11:11:11",91,0));
-                    db.addOutdoorData(new OutdoorData("2015-04-08 11:11:11",12,0));
-                    db.addOutdoorData(new OutdoorData("2015-02-08 11:11:11",355,0));
-                    db.addOutdoorData(new OutdoorData("2015-03-08 11:11:11",170,0));
-                    db.addOutdoorData(new OutdoorData("2015-05-08 11:11:11",150,0));
-                }
-*/
 
                 Intent i = new Intent(HomeActivity.this,ChartActivity.class);
-                //i.putExtra("anim id in", R.anim.up_in);
-                //i.putExtra("anim id out", R.anim.up_out);
                 startActivity(i);
-                //overridePendingTransition(R.anim.down_in, R.anim.down_out);
             }
         });
     }
@@ -172,51 +193,34 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
             double progressValue = ((double)_todayMinutes/(double)180)*150;
             ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "secondaryProgress", 1, (int)Math.round(progressValue));
             animation.setDuration(2000); //in milliseconds
-            //animation.setInterpolator(new DecelerateInterpolator());
             animation.start();
         }
         else
         {
             ObjectAnimator animation = ObjectAnimator.ofInt(progressBar, "secondaryProgress", 1, 150);
             animation.setDuration(1000); //in milliseconds
-            //animation.setInterpolator(new DecelerateInterpolator());
             animation.start();
 
             double progressValue = ((double)_todayMinutes/(double)180)*150;
 
             ObjectAnimator animation2 = ObjectAnimator.ofInt(progressBar, "progress", 1, (int)Math.round(progressValue));
             animation2.setDuration(2000); //in milliseconds
-            //animation2.setInterpolator(new DecelerateInterpolator());
             animation2.start();
         }
-        totalTime.setText(Integer.toString(_todayMinutes / 60)+"h "+Integer.toString(_todayMinutes%60)+"m");
+        totalTime.setText(Integer.toString(_todayMinutes / 60) + "h " + Integer.toString(_todayMinutes % 60) + "m");
     }
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public void createNotification() {
-        // Prepare intent which is triggered if the
-        // notification is selected
-        Intent intent = new Intent(HomeActivity.this, CongratsActivity.class);
-        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-
-        Notification noti = new Notification.Builder(this)
-                .setContentTitle("Congratulations!")
-                .setContentText("You Have Won a Badge")
-                .setSmallIcon(R.drawable.home_icon)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.home_icon))
-                .setContentIntent(pIntent)
-                .build();
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        // hide the notification after its selected
-        noti.flags |= Notification.FLAG_AUTO_CANCEL;
-
-        notificationManager.notify(0, noti);
-
-    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
         bluetoothDataService.stop();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
 
     }
 
@@ -230,9 +234,27 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                     String latestDate = msg.getData().getString(BluetoothDataService.MESSAGE);
                     if(!latestDate.equals(""))
                     {
+                        CalculateBadge calculateBadge = new CalculateBadge(HomeActivity.this,lastSync);
+                        calculateBadge.execute();
                         userPreferences.setUserPreferences(UserPreferences.KEY_LAST_SYNC, latestDate);
                         lastSync = latestDate;
-                        startProgressAnim(db.getTodayMinutes());
+                        int todayMinutes =db.getTodayMinutes();
+                        startProgressAnim(todayMinutes);
+                        if(todayMinutes<=180)
+                        {
+                            RBLeft.setVisibility(View.GONE);
+                            RBRight.setVisibility(View.GONE);
+                            RBCenter.setVisibility(View.VISIBLE);
+                            linerHead.setVisibility(View.GONE);
+                            pullInfo.setVisibility(View.GONE);
+                            syncInfo.setVisibility(View.GONE);
+                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,80);
+                            chartWrapper.setLayoutParams(params);
+                            adviceMessage.setVisibility(View.VISIBLE);
+                            textHome.setVisibility(View.GONE);
+                            tm.setVisibility(View.GONE);
+
+                        }
                         List<OutdoorData>unSyncData = db.getUnsyncOutdoorsDatas();
                         PushToServer pushToServer = new PushToServer(HomeActivity.this,userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID),"myPhoneID");//replace 1 with userID from login
                         pushToServer.setUnsyncDatas(unSyncData);
@@ -325,6 +347,12 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
     }
 
     @Override

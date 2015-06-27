@@ -126,10 +126,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public List<OutdoorData> getAllOutdoorsDatas() {
         List<OutdoorData> outdoorDatas = new ArrayList<OutdoorData>();
         // Select All Query
-        String selectQuery = "SELECT DATE("+ KEY_OUTDOOR_TIMESTAMP +"),SUM("+ KEY_OUTDOOR_MINUTES +") FROM " + TABLE_OUTDOOR_DATAS + " GROUP BY DATE("+ KEY_OUTDOOR_TIMESTAMP +") ORDER BY DATE("+ KEY_OUTDOOR_TIMESTAMP +") ASC";
+        String selectQuery = "SELECT DATE("+ KEY_OUTDOOR_TIMESTAMP +"),SUM("+ KEY_OUTDOOR_MINUTES +") FROM "
+                + TABLE_OUTDOOR_DATAS + " GROUP BY DATE("+ KEY_OUTDOOR_TIMESTAMP +") ORDER BY DATE("+ KEY_OUTDOOR_TIMESTAMP +") ASC";
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                OutdoorData data= new OutdoorData(cursor.getString(0),cursor.getInt(1));
+
+                outdoorDatas.add(data);
+            } while (cursor.moveToNext());
+        }
+        // return list
+        return outdoorDatas;
+    }
+
+    public List<OutdoorData> getWhereAllOutdoorsDatas(String lastSync) {
+        List<OutdoorData> outdoorDatas = new ArrayList<OutdoorData>();
+        // Select All Query
+        String selectQuery = "SELECT DATE("+ KEY_OUTDOOR_TIMESTAMP +"),SUM("+ KEY_OUTDOOR_MINUTES +") FROM "
+                + TABLE_OUTDOOR_DATAS + " WHERE DATE("+ KEY_OUTDOOR_TIMESTAMP +") >= ? GROUP BY DATE("+ KEY_OUTDOOR_TIMESTAMP +") ORDER BY DATE("+ KEY_OUTDOOR_TIMESTAMP +") ASC";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{lastSync});
 
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
