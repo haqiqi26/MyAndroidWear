@@ -41,17 +41,31 @@ public class BluetoothActivity extends ActionBarActivity {
     ListView listViewPaired,listViewNew;
     ArrayAdapter<String> BTPairedArrayAdapter,BTNewArrayAdapter;
     UserPreferences userPreferences;
+    boolean change;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
         findButton= (Button)findViewById(R.id.find);
+        change = false;
         //statusBT = (TextView)findViewById(R.id.bluetoothStatus);
         listViewPaired = (ListView)findViewById(R.id.listPairedDevices);
         listViewNew = (ListView)findViewById(R.id.listNewDevices);
 
         userPreferences = new UserPreferences(BluetoothActivity.this);
+
+        if(getIntent().getExtras()!=null)
+        {
+            if(getIntent().getExtras().containsKey("message"))
+            {
+                String message = getIntent().getExtras().getString("message");
+                if(message.equals("change"))
+                    change = true;
+
+            }
+        }
+
 
 
         myBTAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -77,15 +91,23 @@ public class BluetoothActivity extends ActionBarActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                    userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS,pairedDevices.get(position).getAddress());
-                    userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME,pairedDevices.get(position).getName());
+                    userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS, pairedDevices.get(position).getAddress());
+                    userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME, pairedDevices.get(position).getName());
 
-                    Log.e("selectedDevice",pairedDevices.get(position).getName());
+                    Log.e("selectedDevice", pairedDevices.get(position).getName());
 
-                    Intent i = new Intent(BluetoothActivity.this,HomeActivity.class);
-                    i.putExtra("selectedDevice", pairedDevices.get(position));
-                    startActivity(i);
-                    finish();
+                    if(change){
+                        Intent i = new Intent();
+                        i.putExtra("selectedDevice", pairedDevices.get(position));
+                        setResult(RESULT_OK,i);
+                        finish();
+                    }
+                    else{
+                        Intent i = new Intent(BluetoothActivity.this,HomeActivity.class);
+                        i.putExtra("selectedDevice", pairedDevices.get(position));
+                        startActivity(i);
+                        finish();
+                    }
 
                 }
             });
@@ -104,14 +126,22 @@ public class BluetoothActivity extends ActionBarActivity {
                             BTNewArrayAdapter.notifyDataSetChanged();
                             flag = true;
                         }
+                        if(change){
+                            Intent i = new Intent();
+                            i.putExtra("selectedDevice", newDevices.get(position));
+                            setResult(RESULT_OK,i);
+                            finish();
+                        }
+                        else{
+                            Intent i = new Intent(BluetoothActivity.this,HomeActivity.class);
+                            i.putExtra("selectedDevice", newDevices.get(position));
+                            startActivity(i);
+                            finish();
+                        }
                         if(flag)
                             newDevices.remove(position);
                         listPairedDevices();
 
-                        Intent i = new Intent(BluetoothActivity.this,HomeActivity.class);
-                        i.putExtra("selectedDevice",newDevices.get(position));
-                        startActivity(i);
-                        finish();
 
 
                     } catch (Exception e) {
@@ -252,6 +282,18 @@ public class BluetoothActivity extends ActionBarActivity {
             registerReceiver(receiver, intentFilter);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(change)
+        {
+            Intent i = new Intent();
+            setResult(RESULT_CANCELED,i);
+            finish();
+        }
+    }
+
     public boolean createBond(BluetoothDevice btDevice)throws Exception
     {
         Class class1 = Class.forName("android.bluetooth.BluetoothDevice");

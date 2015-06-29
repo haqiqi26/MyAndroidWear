@@ -120,6 +120,7 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
                                 {
                                     platinumCount++;
                                     lastPlatinumWeek=currentWeek;
+                                    createNotification(PLATINUM);
                                 }
                             }
                             else
@@ -152,6 +153,7 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
                             {
                                 platinumCount++;
                                 lastPlatinumWeek=currentWeek;
+                                createNotification(PLATINUM);
                             }
                         }
                         else

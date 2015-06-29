@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -63,6 +64,8 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
     RelativeLayout RBLeft,RBRight,RBCenter;
     LinearLayout linerHead,chartWrapper;
+
+    final int REQUEST_NEW_BT=1;
     //int todayMinutes;
 
 
@@ -132,6 +135,26 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                 onRefresh();
             }
         });
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String menu = parent.getItemAtPosition(position).toString();
+                if(menu.equals("Pair with new watch"))
+                {
+                    Intent i = new Intent(HomeActivity.this,BluetoothActivity.class);
+                    i.putExtra("message","change");
+                    startActivityForResult(i,REQUEST_NEW_BT);
+
+                    //startactivity result
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         db = DatabaseHandler.getInstance(HomeActivity.this);
         progressBar.setRotation(135);
 
@@ -187,6 +210,26 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
             }
         });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==REQUEST_NEW_BT)
+        {
+            if(resultCode==RESULT_OK){
+                Log.e("result","ok");
+                device = data.getExtras().getParcelable("selectedDevice");
+                menuDrop = new ArrayAdapter<String>(HomeActivity.this, android.R.layout.simple_spinner_item);
+                deviceName = userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME);
+                if(deviceName!=null||deviceName.equals(""))
+                    menuDrop.add(deviceName);
+                menuDrop.add("Pair with new watch");
+                menuDrop.notifyDataSetChanged();
+                spinner.setAdapter(menuDrop);
+            }
+        }
+    }
+
     void startProgressAnim(int _todayMinutes){
         if(_todayMinutes<180)
         {
