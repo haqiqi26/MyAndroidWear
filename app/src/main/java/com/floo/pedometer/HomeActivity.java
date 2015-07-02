@@ -8,8 +8,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -17,6 +20,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -66,6 +70,11 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
     LinearLayout linerHead,chartWrapper;
 
     final int REQUEST_NEW_BT=1;
+    //Your activity will respond to this action String
+    public static final String RECEIVE_UPDATE = "com.floo.pedometer.RECEIVE_UPDATE";
+
+    LocalBroadcastManager bManager;
+
     //int todayMinutes;
 
 
@@ -103,7 +112,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
         deviceName = userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME);
         lastSync = userPreferences.getUserPreferences(UserPreferences.KEY_LAST_SYNC);
-        Log.e("lastsyncpref",lastSync);
+        Log.e("lastsyncpref", lastSync);
         if(lastSync.equals(""))
         {
             //lastSync = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
@@ -111,6 +120,11 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
             userPreferences.setUserPreferences(UserPreferences.KEY_LAST_SYNC,lastSync);
         }
         syncInfo.setText("Last Update: " + lastSync);
+
+        bManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(RECEIVE_UPDATE);
+        bManager.registerReceiver(bReceiver, intentFilter);
 
         swipeLayout.setOnRefreshListener(HomeActivity.this);
         swipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
@@ -127,6 +141,9 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         spinner.setAdapter(menuDrop);
 
         device = getIntent().getExtras().getParcelable("selectedDevice");
+
+        Intent service = new Intent(this,MyService.class);
+        startService(service);
 
         swipeLayout.post(new Runnable() {
             @Override
@@ -229,6 +246,16 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
             }
         }
     }
+    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(RECEIVE_UPDATE)) {
+                lastSync = intent.getExtras().getString("latestUpdate");
+                syncInfo.setText("Last Updated: "+lastSync);
+                //Do something with the string
+            }
+        }
+    };
 
     void startProgressAnim(int _todayMinutes){
         if(_todayMinutes<180)
@@ -257,6 +284,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
     protected void onDestroy() {
         super.onDestroy();
         userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
+        bManager.unregisterReceiver(bReceiver);
         bluetoothDataService.stop();
     }
 
@@ -303,16 +331,18 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                         pushToServer.setUnsyncDatas(unSyncData);
                         pushToServer.execute();
 
-                        Toast.makeText(HomeActivity.this, "Updated"+lastSync,Toast.LENGTH_LONG).show();
+                        Toast.makeText(HomeActivity.this, "Updated "+lastSync,Toast.LENGTH_LONG).show();
+                        syncInfo.setText("Last Updated: "+lastSync);
 
                         //        bluetoothDataService.stop();
                     }
                     else
                     {
-                        Toast.makeText(HomeActivity.this, "no new data"+lastSync,Toast.LENGTH_LONG).show();
+                        Toast.makeText(HomeActivity.this, "no new data",Toast.LENGTH_LONG).show();
+                        syncInfo.setText("Updated Just Now");
                     }
                     Log.e("handler", "done reading");
-                    syncInfo.setText("Last Update: " + lastSync);
+
                     swipeLayout.setRefreshing(false);
                     break;
                 //if success thread

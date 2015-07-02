@@ -137,7 +137,7 @@
                             android:layout_alignTop="@id/image2"
                             android:layout_alignBottom="@id/image2"
                             android:id="@+id/targetOutdoors"
-                            android:text=">3H TODAY"
+                            android:text=">3h TODAY"
                             android:textColor="@android:color/white"
                             android:gravity="center"
                             android:textSize="15dp" />

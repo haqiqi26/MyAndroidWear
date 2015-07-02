@@ -15,8 +15,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -353,6 +355,7 @@ public class BluetoothDataService {
             int id=0;
             String latestDate="";
             DatabaseHandler db = DatabaseHandler.getInstance(context);
+            List<OutdoorData> rows = new ArrayList<OutdoorData>();
             while (true) {
                 byte []pdu=new byte[9];
                 try {
@@ -372,6 +375,10 @@ public class BluetoothDataService {
                     //connectionLost(); // drop the current connection
 
                     // Send message to activity
+                    for(OutdoorData row:rows)
+                    {
+                        db.addOutdoorData(row);
+                    }
                     Message msg = handler.obtainMessage(BluetoothDataService.DONE_READING);
                     Bundle bundle = new Bundle();
                     bundle.putString(BluetoothDataService.MESSAGE, latestDate);
@@ -395,7 +402,8 @@ public class BluetoothDataService {
                     String display = latestDate + " value: " + outdoors_y_n;
                     if(outdoors_y_n>0)
                     {
-                        db.addOutdoorData(new OutdoorData(latestDate,outdoors_y_n,0));
+                        OutdoorData row = new OutdoorData(latestDate,outdoors_y_n);
+                        rows.add(row);
                     }
                     Log.e(TAG, display);
                     id++;
