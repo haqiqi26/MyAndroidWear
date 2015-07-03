@@ -43,7 +43,9 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -116,7 +118,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         if(lastSync.equals(""))
         {
             //lastSync = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-            lastSync = "2015-06-15 10:15:00";
+            lastSync = MainActivity.FIRST_SYNC_TIME;
             userPreferences.setUserPreferences(UserPreferences.KEY_LAST_SYNC,lastSync);
         }
         syncInfo.setText("Last Update: " + lastSync);
@@ -328,6 +330,10 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                         startProgressAnim(todayMinutes);
                         if(todayMinutes<=180)
                         {
+                            if(todayMinutes<=120)
+                                adviceMessage.setText("Try harder.\nGo to the park tomorrow\nto hit your target");
+                            else
+                                adviceMessage.setText("Keep it up! Try harder.\nYou can hit\nthe target tomorrow");
                             RBLeft.setVisibility(View.GONE);
                             RBRight.setVisibility(View.GONE);
                             RBCenter.setVisibility(View.VISIBLE);
@@ -339,7 +345,6 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                             adviceMessage.setVisibility(View.VISIBLE);
                             textHome.setVisibility(View.GONE);
                             tm.setVisibility(View.GONE);
-
                         }
 
                         List<OutdoorData>unSyncData = db.getUnsyncOutdoorsDatas();

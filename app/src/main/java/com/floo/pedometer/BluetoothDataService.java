@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -340,12 +341,12 @@ public class BluetoothDataService {
             //c.set(2015,5,15,10,15,00);  //send the data later than 2015/06/15, 10:15:00,  5 here means June
             c.set(
                     Integer.parseInt(lastSyncDate[0]),
-                    Integer.parseInt(lastSyncDate[1])-1,
+                    Integer.parseInt(lastSyncDate[1]) - 1,
                     Integer.parseInt(lastSyncDate[2]),
                     Integer.parseInt(lastSyncTime[0]),
                     Integer.parseInt(lastSyncTime[1]),
                     Integer.parseInt(lastSyncTime[2])
-                    );
+            );
 
             long timestamp=c.getTimeInMillis();
             bufferBuilder.putLong(timestamp);
@@ -353,6 +354,19 @@ public class BluetoothDataService {
             write(bufferBuilder.array());
 
             int id=0;
+            //TODO
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date now = new Date();
+            //Date prev = sdf.parse("2015-06-21");
+            try {
+                Date current = sdf.parse(lastSync);
+                long diff= now.getTime()-current.getTime();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+
+
             String latestDate="";
             DatabaseHandler db = DatabaseHandler.getInstance(context);
             List<OutdoorData> rows = new ArrayList<OutdoorData>();

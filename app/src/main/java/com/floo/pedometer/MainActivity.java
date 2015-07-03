@@ -54,7 +54,8 @@ public class MainActivity extends ActionBarActivity{
     UserPreferences pref;
     EditText usernameEdit,pass;
     BluetoothAdapter bluetoothAdapter;
-    public static boolean ALLOW_CHANGE_DEVICE = false;//change this to false to hide
+    public static boolean ALLOW_CHANGE_DEVICE = false;//false to hide,true to show
+    public static final String FIRST_SYNC_TIME = "2015-06-15 10:15:00";
     String bluetoothAddr;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

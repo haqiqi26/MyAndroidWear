@@ -40,14 +40,14 @@
                     android:layout_height="match_parent"
                     android:id="@+id/p1">
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/adviceMessage"
-                        android:text="Try Harder\nYou can Do it!"
+                        android:text="Try harder.\nGo to the park tomorrow\nto hit your target"
                         android:textAlignment="center"
                         android:textColor="@android:color/black"
-                        android:textSize="25dp"
-                        android:layout_centerHorizontal="true"
+                        android:textSize="20dp"
+                        android:gravity="center"
                         android:textStyle="bold"
                         android:visibility="gone"
                         />
@@ -137,7 +137,7 @@
                             android:layout_alignTop="@id/image2"
                             android:layout_alignBottom="@id/image2"
                             android:id="@+id/targetOutdoors"
-                            android:text=">3h TODAY"
+                            android:text=">3h Today"
                             android:textColor="@android:color/white"
                             android:gravity="center"
                             android:textSize="15dp" />

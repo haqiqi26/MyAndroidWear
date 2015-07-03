@@ -77,6 +77,9 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
         if(!pref.getUserPreferences(UserPreferences.KEY_WIN_PLATINUM_WEEK).equals(""))
             lastPlatinumWeek = Integer.parseInt(pref.getUserPreferences(UserPreferences.KEY_WIN_PLATINUM_WEEK));
 
+        String prevLastBadge = lastBadgeDate;
+        int prevLastPlatinumWeek = lastPlatinumWeek;
+
         UserBadge userBadge = db.getUserBadge(userID);
         UserTree userTree = db.getUserTree(userID);
         if(userBadge==null)
@@ -182,6 +185,54 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
         userBadge.setPlatinumBadge(platinumCount);
         db.updateUserBadgeData(userBadge);
         db.updateUserTreeData(userTree);
-        return null;
+
+        //check if today get gold
+        /*
+        * if lastbadge == today and lastsavedbadge!=lastbadge
+        * return gold screen
+        * */
+        //check if today get platinum
+        /*
+        * if lastplatinumweek == thisweek and lastsavedplatinumweek != lastplatinumweek
+        * return platinum screen
+        * */
+        //check if today get nothing
+        /*
+        * return nothing to show
+        * */
+
+        String dateNow = sdf.format(new Date());
+        cal.setTime(new Date());
+
+        if(lastPlatinumWeek==cal.get(Calendar.WEEK_OF_YEAR)&&lastPlatinumWeek!=prevLastPlatinumWeek)
+        {
+            return "platinum";
+        }
+        else if(lastBadgeDate.equals(dateNow)&&!prevLastBadge.equals(lastBadgeDate))
+        {
+            return "gold";
+        }
+        else{
+            return "";
+        }
+
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+        if(!result.equals(""))
+        {
+            if(result.equals("platinum")){
+                Intent intent = new Intent(context,CongratsActivity.class);
+                intent.putExtra(BADGE_TYPE,PLATINUM);
+                context.startActivity(intent);
+            }
+            else if(result.equals("gold")){
+                Intent intent = new Intent(context,CongratsActivity.class);
+                intent.putExtra(BADGE_TYPE,GOLD);
+                context.startActivity(intent);
+            }
+        }
     }
 }
