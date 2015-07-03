@@ -52,72 +52,88 @@ public class MainActivity extends ActionBarActivity{
     Button login;
     SwipeRefreshLayout refreshLayout;
     UserPreferences pref;
-    EditText username,pass;
+    EditText usernameEdit,pass;
     BluetoothAdapter bluetoothAdapter;
-    private static final int REQUEST_ENABLE_BT =1;
+    public static boolean ALLOW_CHANGE_DEVICE = false;//change this to false to hide
     String bluetoothAddr;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        pref= new UserPreferences(MainActivity.this);
-        username = (EditText) findViewById(R.id.userName);
-        pass = (EditText)findViewById(R.id.userPass);
-        db = DatabaseHandler.getInstance(this);
-        login = (Button) findViewById(R.id.loginButton);
 
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*Intent i = new Intent(MainActivity.this,HomeActivity.class);
-                startActivity(i);
-                createNotification();
-                //finish();*/
-                new DoLogin().execute();
-                //Random rand = new Random();
-                //int x = rand.nextInt(150)+150;
-                //db.addOutdoorDataToday(x);
-                /*UserPreferences userPreferences = new UserPreferences(MainActivity.this);
-                userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,"1");
-                userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,"user1");
-
-                Intent i = new Intent(MainActivity.this,BluetoothActivity.class);
-                startActivity(i);*/
-            }
-        });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
+        pref = new UserPreferences(MainActivity.this);
         pref.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
         String userID = pref.getUserPreferences(UserPreferences.KEY_USER_ID);
         String username = pref.getUserPreferences(UserPreferences.KEY_USERNAME);
         bluetoothAddr = pref.getUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS);
         String bluetoothName = pref.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME);
 
-        if(!userID.equals("")&&!username.equals("")&&!bluetoothAddr.equals("")&&!bluetoothName.equals(""))
-        {
-            bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if(bluetoothAdapter==null){
-                AlertDialog.Builder builder =  new AlertDialog.Builder(MainActivity.this);
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        MainActivity.this.finish();
-                    }
-                });
-                AlertDialog alertDialog = builder.create();
-                alertDialog.setTitle("Oooppss!!");
-                alertDialog.setMessage("Bluetooth not supported");
-                alertDialog.setCanceledOnTouchOutside(false);
-                alertDialog.show();
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(bluetoothAdapter==null){
+            AlertDialog.Builder builder =  new AlertDialog.Builder(MainActivity.this);
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    MainActivity.this.finish();
+                }
+            });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.setTitle("Oooppss!!");
+            alertDialog.setMessage("Bluetooth not supported");
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
+        }
+        else{
+            if(!bluetoothAdapter.isEnabled()) {
+                Toast.makeText(this,"Enabling bluetooth",Toast.LENGTH_LONG).show();
+                bluetoothAdapter.enable();
             }
-            else {
-                turnOnBTandSwitch();
+            else{
+                Toast.makeText(this,"Bluetooth already on",Toast.LENGTH_LONG).show();
+
             }
         }
+
+        if(!userID.equals("")&&!username.equals("")&&!bluetoothAddr.equals("")&&!bluetoothName.equals(""))
+        {
+            ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog.setCancelable(false);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setMessage("Please Wait...");
+            progressDialog.show();
+            while (!bluetoothAdapter.isEnabled());
+            progressDialog.dismiss();
+
+            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(bluetoothAddr);
+            Intent i = new Intent(MainActivity.this,HomeActivity.class);
+            i.putExtra("selectedDevice",device);
+            startActivity(i);
+            finish();
+        }
+        else {
+
+
+            setContentView(R.layout.activity_main);
+            usernameEdit = (EditText) findViewById(R.id.userName);
+            pass = (EditText) findViewById(R.id.userPass);
+            db = DatabaseHandler.getInstance(this);
+            login = (Button) findViewById(R.id.loginButton);
+
+            login.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new DoLogin().execute();
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        pref.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
+
+
     }
 
     @Override
@@ -125,39 +141,6 @@ public class MainActivity extends ActionBarActivity{
         super.onStop();
         pref.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
 
-    }
-
-    public void turnOnBTandSwitch()
-    {
-        if(!bluetoothAdapter.isEnabled())
-        {
-            Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(turnOnIntent, REQUEST_ENABLE_BT);
-            Toast.makeText(MainActivity.this,"Bluetooth turned on",Toast.LENGTH_LONG).show();
-        }
-        else
-        {
-            Toast.makeText(MainActivity.this,"Bluetooth is already on",Toast.LENGTH_LONG).show();
-            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(bluetoothAddr);
-            Intent i = new Intent(MainActivity.this,HomeActivity.class);
-            i.putExtra("selectedDevice",device);
-            startActivity(i);
-            finish();
-        }
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==REQUEST_ENABLE_BT)
-        {
-            if(resultCode== Activity.RESULT_OK)
-            {
-                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(bluetoothAddr);
-                Intent i = new Intent(MainActivity.this,HomeActivity.class);
-                i.putExtra("selectedDevice",device);
-                startActivity(i);
-            }
-        }
     }
 
     @Override
@@ -196,7 +179,7 @@ public class MainActivity extends ActionBarActivity{
 
             try {
 
-                jsonObj.put("username",username.getText().toString());
+                jsonObj.put("username",usernameEdit.getText().toString());
                 jsonObj.put("pass",pass.getText().toString());
                 String json=jsonObj.toString();
 
@@ -235,20 +218,7 @@ public class MainActivity extends ActionBarActivity{
                     if(valid==1)
                     {
                         Log.e("result", "exist");
-                        /*Random rand = new Random();
-                        int x = rand.nextInt(150)+150;
-                        db.addOutdoorDataToday(x);
-                        db.testingQuery();
 
-                        //String dateNow = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-
-                        //PushToServer pushToServer = new PushToServer(reply.getString("id_user"),"xperia J / 1234");
-                        //pushToServer.addData(dateNow,x);
-                       // pushToServer.execute();
-
-                        //Intent i = new Intent(MainActivity.this,HomeActivity.class);
-                        //startActivity(i);*/
-                        //createNotification();
                         UserPreferences userPreferences = new UserPreferences(MainActivity.this);
                         userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,reply.getString("id_user"));
                         userPreferences.setUserPreferences(UserPreferences.KEY_USERNAME,reply.getString("username"));
@@ -260,6 +230,7 @@ public class MainActivity extends ActionBarActivity{
 
                         Intent i = new Intent(MainActivity.this,BluetoothActivity.class);
                         startActivity(i);
+                        finish();
                         if(progressDialog.isShowing())
                             progressDialog.dismiss();
 

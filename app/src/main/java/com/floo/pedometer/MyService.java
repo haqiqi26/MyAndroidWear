@@ -27,21 +27,31 @@ import java.util.List;
 public class MyService extends IntentService {
 
 
-    UserPreferences userPreferences = new UserPreferences(this);
-    DatabaseHandler db = DatabaseHandler.getInstance(this);
+    UserPreferences userPreferences;
+
+
+    DatabaseHandler db;
+
     String lastSync="";
     BluetoothDataService bluetoothDataService;
     String bluetoothAddr;
     BluetoothDevice device;
-    BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-
+    BluetoothAdapter adapter;
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      *
      * @param name Used to name the worker thread, important only for debugging.
      */
-    public MyService(String name) {
-        super(name);
+    public MyService() {
+        super("MyService");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        userPreferences = new UserPreferences(getApplicationContext());
+        db = DatabaseHandler.getInstance(getApplicationContext());
+        adapter = BluetoothAdapter.getDefaultAdapter();
     }
 
     @Override

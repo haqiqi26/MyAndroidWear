@@ -402,7 +402,7 @@ public class BluetoothDataService {
                     String display = latestDate + " value: " + outdoors_y_n;
                     if(outdoors_y_n>0)
                     {
-                        OutdoorData row = new OutdoorData(latestDate,outdoors_y_n);
+                        OutdoorData row = new OutdoorData(latestDate,outdoors_y_n,0);
                         rows.add(row);
                     }
                     Log.e(TAG, display);

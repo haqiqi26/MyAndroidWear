@@ -157,11 +157,10 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String menu = parent.getItemAtPosition(position).toString();
-                if(menu.equals("Pair with new watch"))
-                {
-                    Intent i = new Intent(HomeActivity.this,BluetoothActivity.class);
-                    i.putExtra("message","change");
-                    startActivityForResult(i,REQUEST_NEW_BT);
+                if (menu.equals("Pair with new watch")) {
+                    Intent i = new Intent(HomeActivity.this, BluetoothActivity.class);
+                    i.putExtra("message", "change");
+                    startActivityForResult(i, REQUEST_NEW_BT);
 
                     //startactivity result
                 }
@@ -174,6 +173,19 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         });
         db = DatabaseHandler.getInstance(HomeActivity.this);
         progressBar.setRotation(135);
+
+        List<OutdoorData> datas =  db.getUnsyncOutdoorsDatas();
+        for(OutdoorData data:datas){
+            Log.e("unsync",data.getId()+" "+data.getTimeStamp()+" "+data.getMinutes()+" "+data.getFlag());
+        }
+
+        if(!MainActivity.ALLOW_CHANGE_DEVICE)
+        {
+            linerHead.setVisibility(View.GONE);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,80);
+            chartWrapper.setLayoutParams(params);
+
+        }
 
         //int todayMinutes = db.getTodayMinutes();
         //Log.e("minute", Integer.toString(todayMinutes));
@@ -203,9 +215,12 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                 textHome.setVisibility(View.VISIBLE);
                 tm.setVisibility(View.VISIBLE);
                 syncInfo.setVisibility(View.VISIBLE);
-                linerHead.setVisibility(View.VISIBLE);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,75);
-                chartWrapper.setLayoutParams(params);
+                LinearLayout.LayoutParams params;
+                if(MainActivity.ALLOW_CHANGE_DEVICE) {
+                    params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 75);
+                    linerHead.setVisibility(View.VISIBLE);
+                    chartWrapper.setLayoutParams(params);
+                }
                 adviceMessage.setVisibility(View.GONE);
             }
         });
@@ -326,6 +341,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                             tm.setVisibility(View.GONE);
 
                         }
+
                         List<OutdoorData>unSyncData = db.getUnsyncOutdoorsDatas();
                         PushToServer pushToServer = new PushToServer(HomeActivity.this,userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID),"myPhoneID");//replace 1 with userID from login
                         pushToServer.setUnsyncDatas(unSyncData);

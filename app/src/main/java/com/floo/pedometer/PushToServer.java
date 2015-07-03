@@ -117,7 +117,7 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
         {
             try {
                 JSONObject reply = new JSONObject(result);
-                int val = reply.getInt("result");
+                int val = reply.getInt("saved_data");
                 if(pushList)
                 {
                     for (int i=0;i<val;i++)
