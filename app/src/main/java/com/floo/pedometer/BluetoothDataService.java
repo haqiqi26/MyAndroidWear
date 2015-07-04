@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by SONY_VAIO on 6/21/2015.
@@ -36,6 +37,7 @@ public class BluetoothDataService {
     public  static final int FAILED = 0;
     public  static final int DONE_READING = 1;
     public  static final int STOPPED = 2;
+    public  static final int READING_PROGRESS = 3;
     public  static final String MESSAGE = "message";
 
 
@@ -358,15 +360,18 @@ public class BluetoothDataService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date now = new Date();
             //Date prev = sdf.parse("2015-06-21");
+            long diff=0;
+            int counter =0;
             try {
                 Date current = sdf.parse(lastSync);
-                long diff= now.getTime()-current.getTime();
+                diff= now.getTime()-current.getTime();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
 
 
+            int minute = (int)TimeUnit.MILLISECONDS.toMinutes(diff);
             String latestDate="";
             DatabaseHandler db = DatabaseHandler.getInstance(context);
             List<OutdoorData> rows = new ArrayList<OutdoorData>();
@@ -419,6 +424,15 @@ public class BluetoothDataService {
                         OutdoorData row = new OutdoorData(latestDate,outdoors_y_n,0);
                         rows.add(row);
                     }
+                    counter++;
+                    double progress = (double)counter/minute;
+                    int percent = (int)Math.round(progress*100);
+                    Message msg = handler.obtainMessage(BluetoothDataService.READING_PROGRESS);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(BluetoothDataService.MESSAGE, percent+"%");
+                    msg.setData(bundle);
+                    handler.sendMessage(msg);
+                    //Log.e("counter",counter+" "+Math.round(progress)+" "+percent+" "+diff);
                     Log.e(TAG, display);
                     id++;
 

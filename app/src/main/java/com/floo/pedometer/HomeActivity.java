@@ -59,7 +59,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
     MediaPlayer mp;
     DatabaseHandler db;
     MyTextView totalTime,textHome,tm;
-    TextView syncInfo,pullInfo,adviceMessage;
+    TextView syncInfo,pullInfo,adviceMessage,syncProgress;
     ArrayAdapter<String>menuDrop;
     BluetoothDevice device;
     String deviceName;
@@ -100,6 +100,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         menuDrop = new ArrayAdapter<String>(HomeActivity.this, android.R.layout.simple_spinner_item);
         userPreferences = new UserPreferences(HomeActivity.this);
         syncInfo = (TextView) findViewById(R.id.syncInfo);
+        syncProgress = (TextView) findViewById(R.id.syncProgress);
         pullInfo = (TextView) findViewById(R.id.pullInfo);
         adviceMessage = (TextView) findViewById(R.id.adviceMessage);
 
@@ -147,13 +148,13 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         Intent service = new Intent(this,MyService.class);
         startService(service);
 
-        swipeLayout.post(new Runnable() {
+        swipeLayout.postDelayed(new Runnable() {
             @Override
             public void run() {
                 swipeLayout.setRefreshing(true);
                 onRefresh();
             }
-        });
+        }, 3000);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -316,18 +317,20 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            int todayMinutes =db.getTodayMinutes();
+            startProgressAnim(todayMinutes);
             switch (msg.what)
             {
                 case BluetoothDataService.DONE_READING:
                     String latestDate = msg.getData().getString(BluetoothDataService.MESSAGE);
+
+
                     if(!latestDate.equals(""))
                     {
-                        CalculateBadge calculateBadge = new CalculateBadge(HomeActivity.this,lastSync);
+                        CalculateBadge calculateBadge = new CalculateBadge(HomeActivity.this, lastSync);
                         calculateBadge.execute();
                         userPreferences.setUserPreferences(UserPreferences.KEY_LAST_SYNC, latestDate);
                         lastSync = latestDate;
-                        int todayMinutes =db.getTodayMinutes();
-                        startProgressAnim(todayMinutes);
                         if(todayMinutes<=180)
                         {
                             if(todayMinutes<=120)
@@ -363,6 +366,8 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                         syncInfo.setText("Updated Just Now");
                     }
                     Log.e("handler", "done reading");
+                    syncProgress.setText("");
+
 
                     swipeLayout.setRefreshing(false);
                     break;
@@ -375,6 +380,8 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                     Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
                     Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
                     syncInfo.setText("Last Update: " + lastSync);
+                    syncProgress.setText("");
+
 
                     swipeLayout.setRefreshing(false);
                     AlertDialog.Builder builder =  new AlertDialog.Builder(HomeActivity.this);
@@ -401,12 +408,18 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                     Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
                     Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
                     syncInfo.setText("Last Update: "+lastSync);
+                    syncProgress.setText("");
 
                     swipeLayout.setRefreshing(false);
 //                    bluetoothDataService.stop();
 
                     Log.e("handler","stopped");
                     break;
+                case BluetoothDataService.READING_PROGRESS:
+                    syncProgress.setText(msg.getData().getString(BluetoothDataService.MESSAGE));
+                    Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
+                    break;
+
             }
         }
     };
