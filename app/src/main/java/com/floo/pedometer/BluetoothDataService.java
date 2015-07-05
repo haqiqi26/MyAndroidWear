@@ -339,7 +339,6 @@ public class BluetoothDataService {
             String[] lastSyncDate = lastSync.split(" ")[0].split("-");
             String[] lastSyncTime = lastSync.split(" ")[1].split(":");
 
-
             //c.set(2015,5,15,10,15,00);  //send the data later than 2015/06/15, 10:15:00,  5 here means June
             c.set(
                     Integer.parseInt(lastSyncDate[0]),
@@ -349,6 +348,7 @@ public class BluetoothDataService {
                     Integer.parseInt(lastSyncTime[1]),
                     Integer.parseInt(lastSyncTime[2])
             );
+            c.add(Calendar.MINUTE,1);
 
             long timestamp=c.getTimeInMillis();
             bufferBuilder.putLong(timestamp);
@@ -356,7 +356,6 @@ public class BluetoothDataService {
             write(bufferBuilder.array());
 
             int id=0;
-            //TODO
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date now = new Date();
             //Date prev = sdf.parse("2015-06-21");
@@ -366,11 +365,12 @@ public class BluetoothDataService {
                 Date current = sdf.parse(lastSync);
                 diff= now.getTime()-current.getTime();
             } catch (ParseException e) {
-                e.printStackTrace();
+                Message msg = handler.obtainMessage(BluetoothDataService.FAILED);
+                Bundle bundle = new Bundle();
+                bundle.putString(BluetoothDataService.MESSAGE, e.getMessage());
+                msg.setData(bundle);
+                handler.sendMessage(msg);
             }
-
-
-
             int minute = (int)TimeUnit.MILLISECONDS.toMinutes(diff);
             String latestDate="";
             DatabaseHandler db = DatabaseHandler.getInstance(context);

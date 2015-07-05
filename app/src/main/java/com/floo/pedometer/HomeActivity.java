@@ -37,7 +37,7 @@ import android.widget.Toast;
 import java.util.List;
 
 
-public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class HomeActivity extends ActionBarActivity {
 
     ProgressBar progressBar;
     ImageButton chartButton,seedButton,homeButton;
@@ -89,6 +89,8 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         syncProgress = (TextView) findViewById(R.id.syncProgress);
         pullInfo = (TextView) findViewById(R.id.pullInfo);
         adviceMessage = (TextView) findViewById(R.id.adviceMessage);
+        db = DatabaseHandler.getInstance(HomeActivity.this);
+
 
 
         linerHead = (LinearLayout)findViewById(R.id.linearTop);
@@ -101,7 +103,6 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
         deviceName = userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME);
         lastSync = userPreferences.getUserPreferences(UserPreferences.KEY_LAST_SYNC);
-        Log.e("lastsyncpref", lastSync);
         if(lastSync.equals(""))
         {
             //lastSync = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
@@ -110,10 +111,6 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         }
         syncInfo.setText("Last Update: " + lastSync);
 
-        bManager = LocalBroadcastManager.getInstance(this);
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(RECEIVE_UPDATE);
-        bManager.registerReceiver(bReceiver, intentFilter);
 
         /*swipeLayout.setOnRefreshListener(HomeActivity.this);
         swipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
@@ -121,21 +118,6 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
         */
-
-        swipeLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                swipeLayout.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeLayout.setRefreshing(false);
-                        onRefresh();
-                    }
-                }, 3000);
-            }
-        });
-        swipeLayout.setRefreshStyle(PullRefreshLayout.STYLE_RING);
-
 
         if(deviceName!=null||deviceName.equals(""))
             menuDrop.add(deviceName);
@@ -146,16 +128,30 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
         device = getIntent().getExtras().getParcelable("selectedDevice");
 
-        Intent service = new Intent(this,MyService.class);
-        startService(service);
 
         swipeLayout.postDelayed(new Runnable() {
             @Override
             public void run() {
                 swipeLayout.setRefreshing(true);
-                onRefresh();
+                doRefresh();
             }
         }, 3000);
+
+        swipeLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                doRefresh();
+            }
+        });
+        swipeLayout.setRefreshStyle(PullRefreshLayout.STYLE_RING);
+
+        Intent service = new Intent(this,MyService.class);
+        startService(service);
+
+        bManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(RECEIVE_UPDATE);
+        bManager.registerReceiver(bReceiver, intentFilter);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -175,13 +171,12 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
 
             }
         });
-        db = DatabaseHandler.getInstance(HomeActivity.this);
         progressBar.setRotation(135);
 
-        List<OutdoorData> datas =  db.getUnsyncOutdoorsDatas();
+        /*List<OutdoorData> datas =  db.getUnsyncOutdoorsDatas();
         for(OutdoorData data:datas){
             Log.e("unsync",data.getId()+" "+data.getTimeStamp()+" "+data.getMinutes()+" "+data.getFlag());
-        }
+        }*/
 
         if(!MainActivity.ALLOW_CHANGE_DEVICE)
         {
@@ -318,12 +313,14 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            int todayMinutes =db.getTodayMinutes();
-            startProgressAnim(todayMinutes);
+            int todayMinutes;
             switch (msg.what)
             {
                 case BluetoothDataService.DONE_READING:
                     String latestDate = msg.getData().getString(BluetoothDataService.MESSAGE);
+                    todayMinutes =db.getTodayMinutes();
+                    startProgressAnim(todayMinutes);
+
 
 
                     if(!latestDate.equals(""))
@@ -370,6 +367,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                     syncProgress.setText("");
 
 
+
                     swipeLayout.setRefreshing(false);
                     break;
                 //if success thread
@@ -382,6 +380,9 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                     Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
                     syncInfo.setText("Last Update: " + lastSync);
                     syncProgress.setText("");
+                    todayMinutes =db.getTodayMinutes();
+                    startProgressAnim(todayMinutes);
+
 
 
                     swipeLayout.setRefreshing(false);
@@ -408,8 +409,11 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
                 case BluetoothDataService.STOPPED:
                     Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
                     Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
-                    syncInfo.setText("Last Update: "+lastSync);
+                    syncInfo.setText("Last Update: " + lastSync);
                     syncProgress.setText("");
+                    todayMinutes =db.getTodayMinutes();
+                    startProgressAnim(todayMinutes);
+
 
                     swipeLayout.setRefreshing(false);
 //                    bluetoothDataService.stop();
@@ -425,11 +429,11 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         }
     };
 
-    @Override
-    public void onRefresh() {
+    public void doRefresh() {
         //swipeLayout.setRefreshing(true);
         syncInfo.setText("Syncing...");
         bluetoothDataService = new BluetoothDataService(HomeActivity.this,mHandler);
+        Log.e("lastsyncpref", lastSync);
         bluetoothDataService.setLastSync(lastSync);
         bluetoothDataService.connect(device,true);
     }

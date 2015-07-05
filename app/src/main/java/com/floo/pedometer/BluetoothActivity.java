@@ -91,6 +91,8 @@ public class BluetoothActivity extends ActionBarActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                    if(myBTAdapter.isDiscovering())
+                        myBTAdapter.cancelDiscovery();
                     userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS, pairedDevices.get(position).getAddress());
                     userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME, pairedDevices.get(position).getName());
 
@@ -117,6 +119,8 @@ public class BluetoothActivity extends ActionBarActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS,newDevices.get(position).getAddress());
                     userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME,newDevices.get(position).getName());
+                    if(myBTAdapter.isDiscovering())
+                        myBTAdapter.cancelDiscovery();
                     try {
                         boolean flag = false;
                         if(createBond(newDevices.get(position)))
