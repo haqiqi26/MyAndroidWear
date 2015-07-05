@@ -1,35 +1,29 @@
 package com.floo.pedometer;
 
+import com.baoyz.widget.PullRefreshLayout;
+
 import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.transition.Visibility;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -40,15 +34,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 
 public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener {
@@ -63,7 +49,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
     ArrayAdapter<String>menuDrop;
     BluetoothDevice device;
     String deviceName;
-    SwipeRefreshLayout swipeLayout;
+    PullRefreshLayout swipeLayout;
     BluetoothDataService bluetoothDataService;
     String lastSync;
     UserPreferences userPreferences;
@@ -96,7 +82,7 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         tm = (MyTextView) findViewById(R.id.tm);
 
         spinner = (Spinner) findViewById(R.id.spinnerDevices);
-        swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
+        swipeLayout = (PullRefreshLayout) findViewById(R.id.swipeRefresh);
         menuDrop = new ArrayAdapter<String>(HomeActivity.this, android.R.layout.simple_spinner_item);
         userPreferences = new UserPreferences(HomeActivity.this);
         syncInfo = (TextView) findViewById(R.id.syncInfo);
@@ -129,11 +115,26 @@ public class HomeActivity extends ActionBarActivity implements SwipeRefreshLayou
         intentFilter.addAction(RECEIVE_UPDATE);
         bManager.registerReceiver(bReceiver, intentFilter);
 
-        swipeLayout.setOnRefreshListener(HomeActivity.this);
+        /*swipeLayout.setOnRefreshListener(HomeActivity.this);
         swipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+        */
+
+        swipeLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeLayout.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeLayout.setRefreshing(false);
+                        onRefresh();
+                    }
+                }, 3000);
+            }
+        });
+        swipeLayout.setRefreshStyle(PullRefreshLayout.STYLE_RING);
 
 
         if(deviceName!=null||deviceName.equals(""))
