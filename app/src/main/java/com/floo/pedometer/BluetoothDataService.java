@@ -429,7 +429,7 @@ public class BluetoothDataService {
                     int percent = (int)Math.round(progress*100);
                     Message msg = handler.obtainMessage(BluetoothDataService.READING_PROGRESS);
                     Bundle bundle = new Bundle();
-                    bundle.putString(BluetoothDataService.MESSAGE, percent+"%");
+                    bundle.putString(BluetoothDataService.MESSAGE, "Syncing... "+percent+"%");
                     msg.setData(bundle);
                     handler.sendMessage(msg);
                     //Log.e("counter",counter+" "+Math.round(progress)+" "+percent+" "+diff);

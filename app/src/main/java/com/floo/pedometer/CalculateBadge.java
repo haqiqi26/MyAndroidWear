@@ -225,15 +225,15 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
         {
             if(result.equals("platinum")){
                 Intent intent = new Intent(context,CongratsActivity.class);
-                intent.putExtra(BADGE_TYPE,PLATINUM);
-                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                //context.startActivity(intent);
+                intent.putExtra(BADGE_TYPE, PLATINUM);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.getApplicationContext().startActivity(intent);
             }
             else if(result.equals("gold")){
                 Intent intent = new Intent(context,CongratsActivity.class);
                 intent.putExtra(BADGE_TYPE,GOLD);
-                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                //context.startActivity(intent);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.getApplicationContext().startActivity(intent);
             }
         }
     }

@@ -10,17 +10,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -332,9 +331,9 @@ public class HomeActivity extends ActionBarActivity {
                         if(todayMinutes<=180)
                         {
                             if(todayMinutes<=120)
-                                adviceMessage.setText("Try harder.\nGo to the park tomorrow\nto hit your target");
+                                adviceMessage.setText("Try harder.\nGo to the park tomorrow\nto hit your target\n");
                             else
-                                adviceMessage.setText("Keep it up! Try harder.\nYou can hit\nthe target tomorrow");
+                                adviceMessage.setText("Keep it up! Try harder.\nYou can hit\nthe target tomorrow\n");
                             RBLeft.setVisibility(View.GONE);
                             RBRight.setVisibility(View.GONE);
                             RBCenter.setVisibility(View.VISIBLE);
@@ -365,9 +364,6 @@ public class HomeActivity extends ActionBarActivity {
                     }
                     Log.e("handler", "done reading");
                     syncProgress.setText("");
-
-
-
                     swipeLayout.setRefreshing(false);
                     break;
                 //if success thread
@@ -383,8 +379,6 @@ public class HomeActivity extends ActionBarActivity {
                     todayMinutes =db.getTodayMinutes();
                     startProgressAnim(todayMinutes);
 
-
-
                     swipeLayout.setRefreshing(false);
                     AlertDialog.Builder builder =  new AlertDialog.Builder(HomeActivity.this);
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -395,9 +389,12 @@ public class HomeActivity extends ActionBarActivity {
                     });
                     AlertDialog alertDialog = builder.create();
                     alertDialog.setTitle("Oooppss!!");
-                    alertDialog.setMessage("Something's wrong\nPlease try again");
+                    alertDialog.setMessage("The watch might be powered off or out of range\nPlease turn on the watch, bring it nearby and try again");
                     alertDialog.setCanceledOnTouchOutside(false);
                     alertDialog.show();
+                    // Must call show() prior to fetching text view
+                    TextView messageView = (TextView)alertDialog.findViewById(android.R.id.message);
+                    messageView.setGravity(Gravity.CENTER);
 
 //                    bluetoothDataService.stop();
 
@@ -421,7 +418,7 @@ public class HomeActivity extends ActionBarActivity {
                     Log.e("handler","stopped");
                     break;
                 case BluetoothDataService.READING_PROGRESS:
-                    syncProgress.setText(msg.getData().getString(BluetoothDataService.MESSAGE));
+                    syncInfo.setText(msg.getData().getString(BluetoothDataService.MESSAGE));
                     Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
                     break;
 

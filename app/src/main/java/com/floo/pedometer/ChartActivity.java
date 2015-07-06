@@ -72,7 +72,6 @@ public class ChartActivity extends ActionBarActivity {
         int i=0;
         for(OutdoorData outdoorData:outdoorDataList) {
 
-
             TextView day = new TextView(ChartActivity.this);
             day.setTypeface(tf);
 
@@ -86,9 +85,6 @@ public class ChartActivity extends ActionBarActivity {
             progressBar.setVisibility(View.VISIBLE);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,myHeight);
             params.setMargins(myWidth, (myHeight+10) * i, 0, 0);
-
-            int x = rand.nextInt(360);
-            //val.add(x);
 
             SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -165,12 +161,6 @@ public class ChartActivity extends ActionBarActivity {
                     if(totalMinutes<=90) {
                         params3.setMargins(myWidth + (int) Math.round(endChartWidth), ((myHeight+10) * j)+14, 0, 0);
                         tv.setGravity(Gravity.CENTER_VERTICAL);
-                        layout.addView(tv, params3);
-                    }
-                    else if(totalMinutes>=350)
-                    {
-                        params3.setMargins(myWidth , ((myHeight+10) * j)+14, linearWidth - (int) Math.round(endChartWidth)-100, 0);
-                        tv.setGravity(Gravity.END|Gravity.CENTER_VERTICAL);
                         layout.addView(tv, params3);
                     }
                     else
