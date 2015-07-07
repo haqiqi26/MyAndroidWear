@@ -153,7 +153,12 @@ public class ChartActivity extends ActionBarActivity {
                     tv.setTextColor(Color.BLACK);
                     tv.setTypeface(tf);
 
-                    double endChartWidth = ((double)totalMinutes/(double)360)*linearWidth;
+                    double endChartWidth;
+                    if(totalMinutes<360)
+                        endChartWidth = ((double)totalMinutes/(double)360)*linearWidth;
+                    else
+                        endChartWidth = linearWidth;
+
                     RelativeLayout.LayoutParams params3 = new RelativeLayout
                             .LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                             myHeight);
