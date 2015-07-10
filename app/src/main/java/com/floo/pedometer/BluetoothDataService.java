@@ -75,7 +75,7 @@ public class BluetoothDataService {
      */
 
     private synchronized void setState(int state) {
-        Log.e(TAG, "setState() " + mState + " -> " + state);
+        Log.d(TAG, "setState() " + mState + " -> " + state);
         mState = state;
 
         // Give the new state to the Handler so the UI Activity can update
@@ -93,7 +93,7 @@ public class BluetoothDataService {
         this.lastSync = lastSync;
     }
     public synchronized void connect(BluetoothDevice device, boolean secure) {
-        Log.e(TAG, "connect to: " + device);
+        Log.d(TAG, "connect to: " + device);
 
         // Cancel any thread attempting to make a connection
         if (mState == STATE_CONNECTING) {
@@ -122,7 +122,7 @@ public class BluetoothDataService {
      */
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice
             device, final String socketType) {
-        Log.e(TAG, "connected, Socket Type:" + socketType);
+        Log.d(TAG, "connected, Socket Type:" + socketType);
 
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {
@@ -148,7 +148,7 @@ public class BluetoothDataService {
      * Stop all threads
      */
     public synchronized void stop() {
-        Log.e(TAG, "stop");
+        Log.d(TAG, "stop");
 
         if (mConnectThread != null) {
             mConnectThread.cancel();
@@ -299,7 +299,7 @@ public class BluetoothDataService {
         private final OutputStream mmOutStream;
 
         public ConnectedThread(BluetoothSocket socket, String socketType) {
-            Log.e(TAG, "create ConnectedThread: " + socketType);
+            Log.d(TAG, "create ConnectedThread: " + socketType);
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
@@ -433,7 +433,7 @@ public class BluetoothDataService {
                     msg.setData(bundle);
                     handler.sendMessage(msg);
                     //Log.e("counter",counter+" "+Math.round(progress)+" "+percent+" "+diff);
-                    Log.e(TAG, display);
+                    Log.d(TAG, display);
                     id++;
 
                 }

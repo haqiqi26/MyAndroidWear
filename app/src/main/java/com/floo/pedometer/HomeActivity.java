@@ -58,9 +58,9 @@ public class HomeActivity extends ActionBarActivity {
 
     final int REQUEST_NEW_BT=1;
     //Your activity will respond to this action String
-    public static final String RECEIVE_UPDATE = "com.floo.pedometer.RECEIVE_UPDATE";
+    //public static final String RECEIVE_UPDATE = "com.floo.pedometer.RECEIVE_UPDATE";
 
-    LocalBroadcastManager bManager;
+    //LocalBroadcastManager bManager;
 
     //int todayMinutes;
 
@@ -143,7 +143,7 @@ public class HomeActivity extends ActionBarActivity {
             }
         });
         swipeLayout.setRefreshStyle(PullRefreshLayout.STYLE_RING);
-
+/*
         Intent service = new Intent(this,MyService.class);
         startService(service);
 
@@ -151,7 +151,7 @@ public class HomeActivity extends ActionBarActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(RECEIVE_UPDATE);
         bManager.registerReceiver(bReceiver, intentFilter);
-
+*/
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -172,11 +172,6 @@ public class HomeActivity extends ActionBarActivity {
         });
         progressBar.setRotation(135);
 
-        /*List<OutdoorData> datas =  db.getUnsyncOutdoorsDatas();
-        for(OutdoorData data:datas){
-            Log.e("unsync",data.getId()+" "+data.getTimeStamp()+" "+data.getMinutes()+" "+data.getFlag());
-        }*/
-
         if(!MainActivity.ALLOW_CHANGE_DEVICE)
         {
             linerHead.setVisibility(View.GONE);
@@ -184,12 +179,6 @@ public class HomeActivity extends ActionBarActivity {
             chartWrapper.setLayoutParams(params);
 
         }
-
-        //int todayMinutes = db.getTodayMinutes();
-        //Log.e("minute", Integer.toString(todayMinutes));
-        //int todayMinutes = 188;
-        //startProgressAnim(todayMinutes);
-
         seedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -247,7 +236,7 @@ public class HomeActivity extends ActionBarActivity {
         if(requestCode==REQUEST_NEW_BT)
         {
             if(resultCode==RESULT_OK){
-                Log.e("result","ok");
+                Log.d("result","ok");
                 device = data.getExtras().getParcelable("selectedDevice");
                 menuDrop = new ArrayAdapter<String>(HomeActivity.this, android.R.layout.simple_spinner_item);
                 deviceName = userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME);
@@ -259,16 +248,20 @@ public class HomeActivity extends ActionBarActivity {
             }
         }
     }
+
+    /*
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals(RECEIVE_UPDATE)) {
                 lastSync = intent.getExtras().getString("latestUpdate");
                 syncInfo.setText("Last Updated: "+lastSync);
+                int todayMinutes =db.getTodayMinutes();
+                startProgressAnim(todayMinutes);
                 //Do something with the string
             }
         }
-    };
+    };*/
 
     void startProgressAnim(int _todayMinutes){
         if(_todayMinutes<180)
@@ -297,15 +290,8 @@ public class HomeActivity extends ActionBarActivity {
     protected void onDestroy() {
         super.onDestroy();
         userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
-        bManager.unregisterReceiver(bReceiver);
+        //bManager.unregisterReceiver(bReceiver);
         bluetoothDataService.stop();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
-
     }
 
     final Handler mHandler = new Handler(){
@@ -347,10 +333,6 @@ public class HomeActivity extends ActionBarActivity {
                             tm.setVisibility(View.GONE);
                         }
 
-                        List<OutdoorData>unSyncData = db.getUnsyncOutdoorsDatas();
-                        PushToServer pushToServer = new PushToServer(HomeActivity.this,userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID),"myPhoneID");//replace 1 with userID from login
-                        pushToServer.setUnsyncDatas(unSyncData);
-                        pushToServer.execute();
 
                         Toast.makeText(HomeActivity.this, "Updated "+lastSync,Toast.LENGTH_LONG).show();
                         syncInfo.setText("Last Updated: "+lastSync);
@@ -362,7 +344,13 @@ public class HomeActivity extends ActionBarActivity {
                         Toast.makeText(HomeActivity.this, "no new data",Toast.LENGTH_LONG).show();
                         syncInfo.setText("Updated Just Now");
                     }
-                    Log.e("handler", "done reading");
+                    Log.d("handler", "done reading");
+                    List<OutdoorData>unSyncData = db.getUnsyncOutdoorsDatas();
+                    if(unSyncData.size()>0) {
+                        PushToServer pushToServer = new PushToServer(HomeActivity.this, userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID), "myPhoneID");//replace 1 with userID from login
+                        pushToServer.setUnsyncDatas(unSyncData);
+                        pushToServer.execute();
+                    }
                     syncProgress.setText("");
                     swipeLayout.setRefreshing(false);
                     break;
@@ -372,7 +360,7 @@ public class HomeActivity extends ActionBarActivity {
                 //push to server
 
                 case BluetoothDataService.FAILED:
-                    Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
+                    Log.d("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
                     Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
                     syncInfo.setText("Last Update: " + lastSync);
                     syncProgress.setText("");
@@ -398,13 +386,13 @@ public class HomeActivity extends ActionBarActivity {
 
 //                    bluetoothDataService.stop();
 
-                    Log.e("handler", "failed");
+                    Log.d("handler", "failed");
                     break;
 
                 //if failed
                 //keluar sync failed
                 case BluetoothDataService.STOPPED:
-                    Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
+                    Log.d("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
                     Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
                     syncInfo.setText("Last Update: " + lastSync);
                     syncProgress.setText("");
@@ -415,11 +403,11 @@ public class HomeActivity extends ActionBarActivity {
                     swipeLayout.setRefreshing(false);
 //                    bluetoothDataService.stop();
 
-                    Log.e("handler","stopped");
+                    Log.d("handler","stopped");
                     break;
                 case BluetoothDataService.READING_PROGRESS:
                     syncInfo.setText(msg.getData().getString(BluetoothDataService.MESSAGE));
-                    Log.e("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
+                    Log.d("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
                     break;
 
             }
@@ -430,7 +418,7 @@ public class HomeActivity extends ActionBarActivity {
         //swipeLayout.setRefreshing(true);
         syncInfo.setText("Syncing...");
         bluetoothDataService = new BluetoothDataService(HomeActivity.this,mHandler);
-        Log.e("lastsyncpref", lastSync);
+        Log.d("lastsyncpref", lastSync);
         bluetoothDataService.setLastSync(lastSync);
         bluetoothDataService.connect(device,true);
     }

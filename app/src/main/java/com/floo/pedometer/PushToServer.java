@@ -8,6 +8,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
@@ -21,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 /**
@@ -76,7 +78,7 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
                 }
                 dataArray.put(dataObj);
             }
-            Log.e("dataarray",dataArray.toString());
+            Log.d("dataarray", String.valueOf(dataArray.length()));
         }
         // Create a new HttpClient and Post Header
         String result="";
@@ -99,13 +101,24 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
 
             HttpResponse response = httpclient.execute(httppost);
             result = EntityUtils.toString(response.getEntity());
-            Log.e("tag", result);
+            Log.d("pushdata", result);
 
 
         } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("pushdata",e.getMessage());
+            result="";
+        }
+        catch (ConnectTimeoutException e){
+            Log.e("pushdata","timeout");
+            result="";
+        }
+        catch (SocketTimeoutException e){
+            Log.e("pushdata","timeout");
+            result="";
+        }
+        catch (IOException e) {
+            Log.e("pushdata", "ioexception");
+            result="";
         }
         return result;
     }
@@ -128,9 +141,10 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
                         db.updateOutdoorData(data);
                     }
                 }
-                Log.e("pushdata","push data done, result: "+val+"data size: "+dataArray.length());
+                Log.d("pushdata","push data done, result: "+val+" data size: "+dataArray.length());
             } catch (JSONException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
+                Log.e("pushdata",e.getMessage());
             }
 
         }

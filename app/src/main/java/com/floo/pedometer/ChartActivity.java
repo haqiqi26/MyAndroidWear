@@ -21,6 +21,7 @@ import android.widget.TextView;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -44,9 +45,6 @@ public class ChartActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart);
-       // setContentView(R.layout.graph_image);
-
-        //String days[] = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"};
         pb = new ArrayList<ProgressBar>();
         db = DatabaseHandler.getInstance(this);
 
@@ -68,12 +66,60 @@ public class ChartActivity extends ActionBarActivity {
         platinumCount.setTypeface(tf);
         goldCount.setTypeface(tf);
 
-        Random rand = new Random();
-        int i=0;
-        for(OutdoorData outdoorData:outdoorDataList) {
 
+        OutdoorData outdoorData;
+        SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE");
+
+        Date dateIterator=null;
+
+        if(outdoorDataList.size()==0)
+        {
+            db.addOutdoorDataToday(0);
+            outdoorDataList  = db.getAllOutdoorsDatas();
+            dateIterator = new Date();
+        }
+
+        Calendar cal = Calendar.getInstance();
+
+
+
+        Date todaysDate = new Date();
+        for(int i = 0;i<outdoorDataList.size();i++){
+
+            outdoorData = outdoorDataList.get(i);
+            try {
+                dateIterator = inFormat.parse(outdoorData.getTimeStamp());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if(!outdoorDataList.get(outdoorDataList.size()-1).getTimeStamp().equals(inFormat.format(todaysDate)))
+            {
+                try {
+                    cal.setTime(inFormat.parse(outdoorDataList.get(outdoorDataList.size()-1).getTimeStamp()));
+                    cal.add(Calendar.DATE,1);
+                    String nextDay = inFormat.format(cal.getTime());
+                    outdoorDataList.add(new OutdoorData(nextDay,0));
+                    db.addOutdoorData(new OutdoorData(nextDay+" 01:01:01",0,0));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            cal.setTime(dateIterator);
+            cal.add(Calendar.DATE,1);
+            String followingDay = inFormat.format(cal.getTime());
+
+            if((i+1)<outdoorDataList.size()-1)
+            {
+                if(!outdoorDataList.get(i+1).getTimeStamp().equals(followingDay)) {
+                    OutdoorData temp = new OutdoorData(followingDay, 0);
+                    outdoorDataList.add(i+1, temp);
+                    db.addOutdoorData(new OutdoorData(followingDay+" 01:01:01",0,0));
+                }
+            }
             TextView day = new TextView(ChartActivity.this);
             day.setTypeface(tf);
+            //outdoorDataList.
 
             ProgressBar progressBar = new ProgressBar(ChartActivity.this, null, android.R.attr.progressBarStyleHorizontal);
             progressBar.setIndeterminate(false);
@@ -86,13 +132,11 @@ public class ChartActivity extends ActionBarActivity {
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,myHeight);
             params.setMargins(myWidth, (myHeight+10) * i, 0, 0);
 
-            SimpleDateFormat inFormat = new SimpleDateFormat("yyyy-MM-dd");
 
             String days="";
             try {
                 Date date = inFormat.parse(outdoorData.getTimeStamp());
-                SimpleDateFormat outFormat = new SimpleDateFormat("EEE");
-                days = outFormat.format(date);
+                days = dayFormat.format(date);
 
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -107,7 +151,7 @@ public class ChartActivity extends ActionBarActivity {
             day.setTextColor(Color.BLACK);
 
             RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(myWidth,myHeight);
-            params2.setMargins(0, (myHeight+10) * i, 0, 0);
+            params2.setMargins(0, (myHeight + 10) * i, 0, 0);
 
             layout.addView(progressBar, params);
             layout.addView(day, params2);
@@ -133,12 +177,11 @@ public class ChartActivity extends ActionBarActivity {
                 //animation.setInterpolator(new DecelerateInterpolator());
                 animation.start();
             }
-            i++;
         }
         linearLayout.post(new Runnable() {
             @Override
             public void run() {
-                Log.e("linear", "width: " + linearLayout.getWidth() + " height:" + linearLayout.getHeight());
+                Log.d("linear", "width: " + linearLayout.getWidth() + " height:" + linearLayout.getHeight());
 
                 int linearWidth = linearLayout.getWidth();
 

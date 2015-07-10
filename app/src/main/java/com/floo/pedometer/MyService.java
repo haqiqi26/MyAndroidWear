@@ -19,6 +19,7 @@ import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -40,7 +41,7 @@ public class MyService extends IntentService {
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      *
-     * @param name Used to name the worker thread, important only for debugging.
+     * @paramname Used to name the worker thread, important only for debugging.
      */
     public MyService() {
         super("MyService");
@@ -52,6 +53,27 @@ public class MyService extends IntentService {
         userPreferences = new UserPreferences(getApplicationContext());
         db = DatabaseHandler.getInstance(getApplicationContext());
         adapter = BluetoothAdapter.getDefaultAdapter();
+    }
+
+    public void showAlertDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        builder.setTitle("Test dialog");
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setMessage("Content");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //Do something
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        alert.show();
     }
 
     @Override
@@ -81,10 +103,10 @@ public class MyService extends IntentService {
                         pushToServer.execute();
 
                         Toast.makeText(MyService.this, "Updated " + lastSync, Toast.LENGTH_LONG).show();
-                        Intent returnResult = new Intent(HomeActivity.RECEIVE_UPDATE);
+                        /*Intent returnResult = new Intent(HomeActivity.RECEIVE_UPDATE);
                         returnResult.putExtra("latestUpdate", lastSync);
                         LocalBroadcastManager.getInstance(MyService.this).sendBroadcast(returnResult);
-                        //sendBroadcast();
+                        *///sendBroadcast();
 
                         //        bluetoothDataService.stop();
                     }
@@ -93,6 +115,8 @@ public class MyService extends IntentService {
                         Toast.makeText(MyService.this, "no new data",Toast.LENGTH_LONG).show();
                     }
                     Log.e("handler", "done reading");
+
+                    showAlertDialog();
 
                     break;
                 //if success thread
@@ -107,6 +131,7 @@ public class MyService extends IntentService {
 //                    bluetoothDataService.stop();
 
                     Log.e("handler", "failed");
+                    showAlertDialog();
                     break;
 
                 //if failed
@@ -116,6 +141,7 @@ public class MyService extends IntentService {
                     Toast.makeText(MyService.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
 
                     Log.e("handler","stopped");
+                    showAlertDialog();
                     break;
             }
         }
@@ -127,6 +153,8 @@ public class MyService extends IntentService {
 
         bluetoothAddr = userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS);
         if(!bluetoothAddr.equals("")) {
+            if(!adapter.isEnabled())
+                adapter.enable();
             device = adapter.getRemoteDevice(bluetoothAddr);
             lastSync = userPreferences.getUserPreferences(UserPreferences.KEY_LAST_SYNC);
             Log.e("lastsyncpref", lastSync);
@@ -135,10 +163,11 @@ public class MyService extends IntentService {
                 lastSync = "2015-06-15 10:15:00";
                 userPreferences.setUserPreferences(UserPreferences.KEY_LAST_SYNC, lastSync);
             }
-
             bluetoothDataService = new BluetoothDataService(this, mHandler);
             bluetoothDataService.setLastSync(lastSync);
             bluetoothDataService.connect(device, true);
+
+
         }
         scheduleNextUpdate();
 

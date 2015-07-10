@@ -96,7 +96,7 @@ public class BluetoothActivity extends ActionBarActivity {
                     userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS, pairedDevices.get(position).getAddress());
                     userPreferences.setUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME, pairedDevices.get(position).getName());
 
-                    Log.e("selectedDevice", pairedDevices.get(position).getName());
+                    Log.d("selectedDevice", pairedDevices.get(position).getName());
 
                     if(change){
                         Intent i = new Intent();
@@ -171,7 +171,7 @@ public class BluetoothActivity extends ActionBarActivity {
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
         startActivity(discoverableIntent);
-        Log.e("Log", "Discoverable ");
+        Log.d("Log", "Discoverable ");
 
     }
 
@@ -199,7 +199,7 @@ public class BluetoothActivity extends ActionBarActivity {
         BTPairedArrayAdapter.clear();
         for(BluetoothDevice device:pairedDevices) {
             BTPairedArrayAdapter.add(device.getName());
-            Log.e("paired","addr: "+device.getAddress()+" name: "+device.getName()+" uuid: "+device.getUuids());
+            Log.d("paired","addr: "+device.getAddress()+" name: "+device.getName());
         }
         BTPairedArrayAdapter.notifyDataSetChanged();
     }

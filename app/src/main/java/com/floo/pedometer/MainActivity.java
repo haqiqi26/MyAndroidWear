@@ -188,15 +188,18 @@ public class MainActivity extends ActionBarActivity{
 
                 HttpResponse response = httpclient.execute(httppost);
                 result = EntityUtils.toString(response.getEntity());
-                Log.e("tag", result);
+                Log.d("tag", result);
 
 
             } catch (ClientProtocolException e) {
                 e.printStackTrace();
+                result="";
             } catch (IOException e) {
                 e.printStackTrace();
+                result="";
             } catch (JSONException e) {
                 e.printStackTrace();
+                result="";
             }
             return result;
         }
@@ -213,15 +216,11 @@ public class MainActivity extends ActionBarActivity{
                     int valid = reply.getInt("result");
                     if(valid==1)
                     {
-                        Log.e("result", "exist");
+                        Log.d("result", "exist");
 
                         UserPreferences userPreferences = new UserPreferences(MainActivity.this);
                         userPreferences.setUserPreferences(UserPreferences.KEY_USER_ID,reply.getString("id_user"));
                         userPreferences.setUserPreferences(UserPreferences.KEY_USERNAME,reply.getString("username"));
-                        Log.e("pref", userPreferences.getUserPreferences(UserPreferences.KEY_LAST_SYNC));
-                        Log.e("pref",userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID));
-                        Log.e("pref",userPreferences.getUserPreferences(UserPreferences.KEY_USERNAME));
-
 
 
                         Intent i = new Intent(MainActivity.this,BluetoothActivity.class);
@@ -233,7 +232,7 @@ public class MainActivity extends ActionBarActivity{
                     }
                     else if(valid==0)
                     {
-                        Log.e("result", "not exist");
+                        Log.d("result", "not exist");
                         if(progressDialog.isShowing())
                             progressDialog.dismiss();
                         AlertDialog.Builder builder =  new AlertDialog.Builder(MainActivity.this);
@@ -258,7 +257,7 @@ public class MainActivity extends ActionBarActivity{
                 }
             }
             else{
-                Log.e("result", "Please Try Again");
+                Log.d("result", "Please Try Again");
                 if(progressDialog.isShowing())
                     progressDialog.dismiss();
                 AlertDialog.Builder builder =  new AlertDialog.Builder(MainActivity.this);

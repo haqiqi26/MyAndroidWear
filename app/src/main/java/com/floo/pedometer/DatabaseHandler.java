@@ -198,16 +198,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return minutes;
     }
-    public void testingQuery(){
-        String selectQuery = "SELECT DATE("+ KEY_OUTDOOR_TIMESTAMP +"),DATE('now','localtime') FROM " + TABLE_OUTDOOR_DATAS ;
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor != null&&cursor.moveToFirst()) {
-            Log.e("data",cursor.getString(0)+" "+cursor.getString(1));
-        }
-    }
     public void deleteOutdoorData(OutdoorData outdoorData) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_OUTDOOR_DATAS, KEY_OUTDOOR_ID + " = ?",
