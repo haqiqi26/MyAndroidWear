@@ -100,7 +100,7 @@ public class ChartActivity extends ActionBarActivity {
                     cal.add(Calendar.DATE,1);
                     String nextDay = inFormat.format(cal.getTime());
                     outdoorDataList.add(new OutdoorData(nextDay,0));
-                    db.addOutdoorData(new OutdoorData(nextDay+" 01:01:01",0,0));
+                    db.addOutdoorData(new OutdoorData(nextDay+" 01:01:01",0,0,0.0));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -114,7 +114,7 @@ public class ChartActivity extends ActionBarActivity {
                 if(!outdoorDataList.get(i+1).getTimeStamp().equals(followingDay)) {
                     OutdoorData temp = new OutdoorData(followingDay, 0);
                     outdoorDataList.add(i+1, temp);
-                    db.addOutdoorData(new OutdoorData(followingDay+" 01:01:01",0,0));
+                    db.addOutdoorData(new OutdoorData(followingDay+" 01:01:01",0,0,0.0));
                 }
             }
             TextView day = new TextView(ChartActivity.this);

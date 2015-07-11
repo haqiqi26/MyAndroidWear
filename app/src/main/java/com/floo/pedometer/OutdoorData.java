@@ -8,26 +8,22 @@ public class OutdoorData {
     private String timeStamp;
     private int minutes;
     private int flag;
+    private double luxReading;
 
-    public int getFlag() {
-        return flag;
-    }
 
-    public void setFlag(int flag) {
-        this.flag = flag;
-    }
-
-    public OutdoorData(int id, String timeStamp, int minutes,int flag) {
+    public OutdoorData(int id, String timeStamp, int minutes,int flag,double luxReading) {
         this.timeStamp = timeStamp;
         this.id = id;
         this.minutes = minutes;
         this.flag = flag;
+        this.luxReading = luxReading;
     }
 
-    public OutdoorData(String timeStamp, int minutes,int flag) {
+    public OutdoorData(String timeStamp, int minutes,int flag,double luxReading) {
         this.timeStamp = timeStamp;
         this.minutes = minutes;
         this.flag = flag;
+        this.luxReading = luxReading;
     }
 
     public OutdoorData(String timeStamp, int minutes) {
@@ -57,5 +53,21 @@ public class OutdoorData {
 
     public void setMinutes(int minutes) {
         this.minutes = minutes;
+    }
+
+    public int getFlag() {
+        return flag;
+    }
+
+    public void setFlag(int flag) {
+        this.flag = flag;
+    }
+
+    public double getLuxReading() {
+        return luxReading;
+    }
+
+    public void setLuxReading(double luxReading) {
+        this.luxReading = luxReading;
     }
 }

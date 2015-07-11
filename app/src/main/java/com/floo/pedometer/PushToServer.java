@@ -42,7 +42,7 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
         this.phoneID = phoneID;
         dataArray = new JSONArray();
     }
-    public void addData(String timeStamp,int duration)
+    public void addData(String timeStamp,int duration,double luxReading)
     {
         JSONObject dataObj = new JSONObject();
         try {
@@ -50,6 +50,8 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
             dataObj.put("phoneid", phoneID);
             dataObj.put("user", userID);
             dataObj.put("duration", duration);
+            dataObj.put("luxReading", luxReading);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -73,6 +75,7 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
                     dataObj.put("phoneid", phoneID);
                     dataObj.put("user", userID);
                     dataObj.put("duration", data.getMinutes());
+                    dataObj.put("luxReading", data.getLuxReading());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

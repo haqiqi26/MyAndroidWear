@@ -34,6 +34,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_OUTDOOR_TIMESTAMP = "recordstamp";
     private static final String KEY_OUTDOOR_MINUTES = "minutes";
     private static final String KEY_OUTDOOR_FLAG = "flag";
+    private static final String KEY_OUTDOOR_LUXREADING = "luxReading";
 
     private static final String KEY_USER_BADGES = "userid";
     private static final String KEY_PLATINUM_BADGES = "platinum";
@@ -70,7 +71,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_OUTDOOR_TABLE = "CREATE TABLE " + TABLE_OUTDOOR_DATAS + "("
                 + KEY_OUTDOOR_ID + " INTEGER PRIMARY KEY," + KEY_OUTDOOR_TIMESTAMP + " DATETIME,"
-                + KEY_OUTDOOR_MINUTES + " INTEGER," + KEY_OUTDOOR_FLAG + " INTEGER"+ ")";
+                + KEY_OUTDOOR_MINUTES + " INTEGER," + KEY_OUTDOOR_FLAG + " INTEGER,"+KEY_OUTDOOR_LUXREADING+ " DOUBLE )";
         db.execSQL(CREATE_OUTDOOR_TABLE);
         String CREATE_BADGES_TABLE = "CREATE TABLE " + TABLE_USER_BADGES + "("
                 + KEY_USER_BADGES+ " VARCHAR(100) PRIMARY KEY," + KEY_PLATINUM_BADGES+ " INTEGER,"
@@ -101,6 +102,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_OUTDOOR_TIMESTAMP, outdoorData.getTimeStamp());
         values.put(KEY_OUTDOOR_MINUTES, outdoorData.getMinutes());
         values.put(KEY_OUTDOOR_FLAG, outdoorData.getFlag());
+        values.put(KEY_OUTDOOR_LUXREADING, outdoorData.getLuxReading());
+
 
         // Inserting Row
         db.insert(TABLE_OUTDOOR_DATAS, null, values);
@@ -114,6 +117,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_OUTDOOR_TIMESTAMP, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         values.put(KEY_OUTDOOR_MINUTES, minutes);
         values.put(KEY_OUTDOOR_FLAG, 0);
+        values.put(KEY_OUTDOOR_LUXREADING, 0.0);
+
 
 
         // Inserting Row
@@ -122,7 +127,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-
+//for chart
     public List<OutdoorData> getAllOutdoorsDatas() {
         List<OutdoorData> outdoorDatas = new ArrayList<OutdoorData>();
         // Select All Query
@@ -176,7 +181,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                OutdoorData data= new OutdoorData(cursor.getInt(0),cursor.getString(1),cursor.getInt(2),cursor.getInt(3));
+                OutdoorData data= new OutdoorData(cursor.getInt(0),cursor.getString(1),cursor.getInt(2),cursor.getInt(3),cursor.getDouble(4));
 
                 outdoorDatas.add(data);
             } while (cursor.moveToNext());

@@ -374,9 +374,10 @@ public class BluetoothDataService {
             List<OutdoorData> rows = new ArrayList<OutdoorData>();
 
             while (true) {
-                byte []pdu=new byte[9];
+                byte []pdu=new byte[17];
                 try {
-                    mmDinput.readFully(pdu);
+                    if(mmDinput.available()>0)
+                        mmDinput.readFully(pdu);
                 }catch (IOException e){
                     Log.e(TAG, e.getMessage());
                     Message msg = handler.obtainMessage(BluetoothDataService.FAILED);
@@ -384,6 +385,7 @@ public class BluetoothDataService {
                     bundle.putString(BluetoothDataService.MESSAGE, e.getMessage());
                     msg.setData(bundle);
                     handler.sendMessage(msg);
+                    break;
                 }
                 ByteBuffer bb=ByteBuffer.wrap(pdu);
                 long timepoint=bb.getLong();
@@ -415,6 +417,7 @@ public class BluetoothDataService {
                     break;
                 }else {
                     byte outdoors_y_n = bb.get();
+                    double luxReading = bb.getDouble();
                     latestDate = datetimeformat.format(new Date(timepoint));
                     String display = latestDate + " value: " + outdoors_y_n;
                     if(outdoors_y_n>0)
@@ -423,12 +426,12 @@ public class BluetoothDataService {
                         {
                             if(lastMinute==0)
                             {
-                                OutdoorData row = new OutdoorData(latestDate,outdoors_y_n,0);
+                                OutdoorData row = new OutdoorData(latestDate,outdoors_y_n,0,luxReading);
                                 rows.add(row);
                             }
                         }
                         else {
-                            OutdoorData row = new OutdoorData(latestDate,outdoors_y_n,0);
+                            OutdoorData row = new OutdoorData(latestDate,outdoors_y_n,0,luxReading);
                             rows.add(row);
                         }
                     }
