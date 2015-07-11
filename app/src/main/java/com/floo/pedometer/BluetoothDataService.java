@@ -374,10 +374,10 @@ public class BluetoothDataService {
             List<OutdoorData> rows = new ArrayList<OutdoorData>();
 
             while (true) {
-                byte []pdu=new byte[17];
+                //byte []pdu=new byte[17];
+                byte []pdu=new byte[9];
                 try {
-                    if(mmDinput.available()>0)
-                        mmDinput.readFully(pdu);
+                    mmDinput.readFully(pdu);
                 }catch (IOException e){
                     Log.e(TAG, e.getMessage());
                     Message msg = handler.obtainMessage(BluetoothDataService.FAILED);
@@ -417,7 +417,8 @@ public class BluetoothDataService {
                     break;
                 }else {
                     byte outdoors_y_n = bb.get();
-                    double luxReading = bb.getDouble();
+                    double luxReading=0.0;
+                    //luxReading = bb.getDouble();
                     latestDate = datetimeformat.format(new Date(timepoint));
                     String display = latestDate + " value: " + outdoors_y_n;
                     if(outdoors_y_n>0)
