@@ -198,6 +198,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return minutes;
     }
+    public int getCheckpointMinutes(String checkpointTime){
+        int minutes=0;
+        String selectQuery = "SELECT "+ KEY_OUTDOOR_MINUTES +" FROM " + TABLE_OUTDOOR_DATAS + " WHERE "+ KEY_OUTDOOR_TIMESTAMP +" = ?";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{checkpointTime});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            minutes = Integer.parseInt(cursor.getString(0));
+        }
+        return minutes;
+    }
     public void deleteOutdoorData(OutdoorData outdoorData) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_OUTDOOR_DATAS, KEY_OUTDOOR_ID + " = ?",

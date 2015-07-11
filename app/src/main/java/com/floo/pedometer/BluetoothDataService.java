@@ -230,12 +230,7 @@ public class BluetoothDataService {
                     msg.setData(bundle);
                     handler.sendMessage(msg);
                     mmSocket.close();
-                    /*try {
-                        mmSocket = (BluetoothSocket) mmDevice.getClass().getMethod("createRfcommSocket", new Class[]{int.class}).invoke(mmDevice, 1);
-                    } catch (Exception e2) {
-                        Log.e(TAG, e2.toString());
-                    }*/
-                    //connectionFailed();
+
                     // Cancel any thread attempting to make a connection
                     if (mConnectThread != null) {
                         mConnectThread.cancel();
@@ -348,7 +343,7 @@ public class BluetoothDataService {
                     Integer.parseInt(lastSyncTime[1]),
                     Integer.parseInt(lastSyncTime[2])
             );
-            c.add(Calendar.MINUTE,1);
+            //c.add(Calendar.MINUTE,1);
 
             long timestamp=c.getTimeInMillis();
             bufferBuilder.putLong(timestamp);
@@ -356,13 +351,12 @@ public class BluetoothDataService {
             write(bufferBuilder.array());
 
             int id=0;
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date now = new Date();
             //Date prev = sdf.parse("2015-06-21");
             long diff=0;
             int counter =0;
             try {
-                Date current = sdf.parse(lastSync);
+                Date current = datetimeformat.parse(lastSync);
                 diff= now.getTime()-current.getTime();
             } catch (ParseException e) {
                 Message msg = handler.obtainMessage(BluetoothDataService.FAILED);
@@ -371,10 +365,14 @@ public class BluetoothDataService {
                 msg.setData(bundle);
                 handler.sendMessage(msg);
             }
+
             int minute = (int)TimeUnit.MILLISECONDS.toMinutes(diff);
             String latestDate="";
             DatabaseHandler db = DatabaseHandler.getInstance(context);
+            int lastMinute = db.getCheckpointMinutes(lastSync);
+            //Log.e("lastminute",lastMinute+"");
             List<OutdoorData> rows = new ArrayList<OutdoorData>();
+
             while (true) {
                 byte []pdu=new byte[9];
                 try {
@@ -421,8 +419,18 @@ public class BluetoothDataService {
                     String display = latestDate + " value: " + outdoors_y_n;
                     if(outdoors_y_n>0)
                     {
-                        OutdoorData row = new OutdoorData(latestDate,outdoors_y_n,0);
-                        rows.add(row);
+                        if(id==0)
+                        {
+                            if(lastMinute==0)
+                            {
+                                OutdoorData row = new OutdoorData(latestDate,outdoors_y_n,0);
+                                rows.add(row);
+                            }
+                        }
+                        else {
+                            OutdoorData row = new OutdoorData(latestDate,outdoors_y_n,0);
+                            rows.add(row);
+                        }
                     }
                     counter++;
                     double progress = (double)counter/minute;

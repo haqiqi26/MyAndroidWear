@@ -47,7 +47,7 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
         Notification noti = new Notification.Builder(context)
                 .setContentTitle("Congratulations!")
                 .setContentText("You Have Won a Badge")
-                .setSmallIcon(R.drawable.home_icon)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.home_icon))
                 .setContentIntent(pIntent)
                 .build();

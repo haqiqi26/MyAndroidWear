@@ -44,7 +44,7 @@ public class HomeActivity extends ActionBarActivity {
     MediaPlayer mp;
     DatabaseHandler db;
     MyTextView totalTime,textHome,tm;
-    TextView syncInfo,pullInfo,adviceMessage,syncProgress;
+    TextView syncInfo,pullInfo,adviceMessage;
     ArrayAdapter<String>menuDrop;
     BluetoothDevice device;
     String deviceName;
@@ -85,7 +85,6 @@ public class HomeActivity extends ActionBarActivity {
         menuDrop = new ArrayAdapter<String>(HomeActivity.this, android.R.layout.simple_spinner_item);
         userPreferences = new UserPreferences(HomeActivity.this);
         syncInfo = (TextView) findViewById(R.id.syncInfo);
-        syncProgress = (TextView) findViewById(R.id.syncProgress);
         pullInfo = (TextView) findViewById(R.id.pullInfo);
         adviceMessage = (TextView) findViewById(R.id.adviceMessage);
         db = DatabaseHandler.getInstance(HomeActivity.this);
@@ -175,7 +174,7 @@ public class HomeActivity extends ActionBarActivity {
         if(!MainActivity.ALLOW_CHANGE_DEVICE)
         {
             linerHead.setVisibility(View.GONE);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,80);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,85);
             chartWrapper.setLayoutParams(params);
 
         }
@@ -204,7 +203,7 @@ public class HomeActivity extends ActionBarActivity {
                 syncInfo.setVisibility(View.VISIBLE);
                 LinearLayout.LayoutParams params;
                 if(MainActivity.ALLOW_CHANGE_DEVICE) {
-                    params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 75);
+                    params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 80);
                     linerHead.setVisibility(View.VISIBLE);
                     chartWrapper.setLayoutParams(params);
                 }
@@ -326,7 +325,7 @@ public class HomeActivity extends ActionBarActivity {
                             linerHead.setVisibility(View.GONE);
                             pullInfo.setVisibility(View.GONE);
                             syncInfo.setVisibility(View.GONE);
-                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,80);
+                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,85);
                             chartWrapper.setLayoutParams(params);
                             adviceMessage.setVisibility(View.VISIBLE);
                             textHome.setVisibility(View.GONE);
@@ -351,7 +350,6 @@ public class HomeActivity extends ActionBarActivity {
                         pushToServer.setUnsyncDatas(unSyncData);
                         pushToServer.execute();
                     }
-                    syncProgress.setText("");
                     swipeLayout.setRefreshing(false);
                     break;
                 //if success thread
@@ -363,7 +361,6 @@ public class HomeActivity extends ActionBarActivity {
                     Log.d("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
                     Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
                     syncInfo.setText("Last Update: " + lastSync);
-                    syncProgress.setText("");
                     todayMinutes =db.getTodayMinutes();
                     startProgressAnim(todayMinutes);
 
@@ -395,7 +392,6 @@ public class HomeActivity extends ActionBarActivity {
                     Log.d("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
                     Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
                     syncInfo.setText("Last Update: " + lastSync);
-                    syncProgress.setText("");
                     todayMinutes =db.getTodayMinutes();
                     startProgressAnim(todayMinutes);
 
