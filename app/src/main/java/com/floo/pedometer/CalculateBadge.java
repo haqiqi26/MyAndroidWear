@@ -204,11 +204,15 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
         String dateNow = sdf.format(new Date());
         cal.setTime(new Date());
 
-        if(lastPlatinumWeek==cal.get(Calendar.WEEK_OF_YEAR)&&lastPlatinumWeek!=prevLastPlatinumWeek)
+        if(lastPlatinumWeek==cal.get(Calendar.WEEK_OF_YEAR)
+                &&lastPlatinumWeek!=prevLastPlatinumWeek
+                &&!MainActivity.SHOW_BADGE_CONGRAT_EVERY_SYNC)
         {
             return "platinum";
         }
-        else if(lastBadgeDate.equals(dateNow)&&!prevLastBadge.equals(lastBadgeDate))
+        else if(lastBadgeDate.equals(dateNow)
+                &&!prevLastBadge.equals(lastBadgeDate)
+                &&!MainActivity.SHOW_BADGE_CONGRAT_EVERY_SYNC)
         {
             return "gold";
         }

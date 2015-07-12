@@ -331,6 +331,26 @@ public class HomeActivity extends ActionBarActivity {
                             textHome.setVisibility(View.GONE);
                             tm.setVisibility(View.GONE);
                         }
+                        else{
+
+                            if(MainActivity.SHOW_BADGE_CONGRAT_EVERY_SYNC) {
+
+
+                                if(Integer.parseInt(userPreferences.getUserPreferences(UserPreferences.KEY_COUNT_GOLD_WEEK))>3) {
+
+                                    Intent j = new Intent(HomeActivity.this, CongratsActivity.class);
+                                    j.putExtra("badgeType", 2);//show platinum
+                                    startActivity(j);
+                                }
+                                else {
+                                    Intent i = new Intent(HomeActivity.this, CongratsActivity.class);
+                                    i.putExtra("badgeType", 1);//show gold
+                                    startActivity(i);
+                                }
+
+                            }
+
+                        }
 
 
                         Toast.makeText(HomeActivity.this, "Updated "+lastSync,Toast.LENGTH_LONG).show();

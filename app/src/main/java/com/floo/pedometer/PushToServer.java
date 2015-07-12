@@ -50,7 +50,8 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
             dataObj.put("phoneid", phoneID);
             dataObj.put("user", userID);
             dataObj.put("duration", duration);
-            dataObj.put("luxReading", luxReading);
+            if(MainActivity.DATA_CONTAIN_LUXREADING)
+                dataObj.put("luxReading", luxReading);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -75,7 +76,8 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
                     dataObj.put("phoneid", phoneID);
                     dataObj.put("user", userID);
                     dataObj.put("duration", data.getMinutes());
-                    dataObj.put("luxReading", data.getLuxReading());
+                    if(MainActivity.DATA_CONTAIN_LUXREADING)
+                        dataObj.put("luxReading", data.getLuxReading());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

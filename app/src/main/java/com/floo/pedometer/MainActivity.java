@@ -46,8 +46,11 @@ public class MainActivity extends ActionBarActivity{
     EditText usernameEdit,pass;
     BluetoothAdapter bluetoothAdapter;
 
-    public static boolean ALLOW_CHANGE_DEVICE = false;//false to hide,true to show
+    public static final boolean ALLOW_CHANGE_DEVICE = false;//false to hide,true to show
     public static final String FIRST_SYNC_TIME = "2015-07-02 10:15:00";//set the oldest data
+    public static final boolean SHOW_BADGE_CONGRAT_EVERY_SYNC = false;//true to show every sync
+    public static final boolean DATA_CONTAIN_LUXREADING = false;//data from watch contain luxreading
+
 
     String bluetoothAddr;
     @Override
