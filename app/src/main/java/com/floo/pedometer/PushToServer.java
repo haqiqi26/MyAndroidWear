@@ -51,7 +51,7 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
             dataObj.put("user", userID);
             dataObj.put("duration", duration);
             if(MainActivity.DATA_CONTAIN_LUXREADING)
-                dataObj.put("luxReading", luxReading);
+                dataObj.put("lightReading", luxReading);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -77,7 +77,7 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
                     dataObj.put("user", userID);
                     dataObj.put("duration", data.getMinutes());
                     if(MainActivity.DATA_CONTAIN_LUXREADING)
-                        dataObj.put("luxReading", data.getLuxReading());
+                        dataObj.put("lightReading", data.getLuxReading());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -91,7 +91,8 @@ public class PushToServer extends AsyncTask<Void,Void,String> {
         HttpConnectionParams.setConnectionTimeout(myParams, 10000);
         HttpConnectionParams.setSoTimeout(myParams, 10000);
         HttpClient httpclient = new DefaultHttpClient(myParams );
-        String url = "http://development.ayowes.com/pedobackend/public/api/activitieslog";
+        //String url = "http://development.ayowes.com/pedobackend/public/api/activitieslog";
+        String url = "http://www.datatestserversg.com/api/activitieslog";
 
         try {
 

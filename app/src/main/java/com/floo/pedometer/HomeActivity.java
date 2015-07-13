@@ -3,7 +3,9 @@ package com.floo.pedometer;
 import com.baoyz.widget.PullRefreshLayout;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.KeyguardManager;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -88,7 +90,6 @@ public class HomeActivity extends ActionBarActivity {
         pullInfo = (TextView) findViewById(R.id.pullInfo);
         adviceMessage = (TextView) findViewById(R.id.adviceMessage);
         db = DatabaseHandler.getInstance(HomeActivity.this);
-
 
 
         linerHead = (LinearLayout)findViewById(R.id.linearTop);
@@ -293,7 +294,7 @@ public class HomeActivity extends ActionBarActivity {
         bluetoothDataService.stop();
     }
 
-    final Handler mHandler = new Handler(){
+   final Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -304,9 +305,6 @@ public class HomeActivity extends ActionBarActivity {
                     String latestDate = msg.getData().getString(BluetoothDataService.MESSAGE);
                     todayMinutes =db.getTodayMinutes();
                     startProgressAnim(todayMinutes);
-
-
-
                     if(!latestDate.equals(""))
                     {
                         CalculateBadge calculateBadge = new CalculateBadge(HomeActivity.this, lastSync);
@@ -334,10 +332,7 @@ public class HomeActivity extends ActionBarActivity {
                         else{
 
                             if(MainActivity.SHOW_BADGE_CONGRAT_EVERY_SYNC) {
-
-
                                 if(Integer.parseInt(userPreferences.getUserPreferences(UserPreferences.KEY_COUNT_GOLD_WEEK))>3) {
-
                                     Intent j = new Intent(HomeActivity.this, CongratsActivity.class);
                                     j.putExtra("badgeType", 2);//show platinum
                                     startActivity(j);
@@ -347,16 +342,10 @@ public class HomeActivity extends ActionBarActivity {
                                     i.putExtra("badgeType", 1);//show gold
                                     startActivity(i);
                                 }
-
                             }
-
                         }
-
-
                         Toast.makeText(HomeActivity.this, "Updated "+lastSync,Toast.LENGTH_LONG).show();
                         syncInfo.setText("Last Updated: "+lastSync);
-
-                        //        bluetoothDataService.stop();
                     }
                     else
                     {
@@ -372,11 +361,6 @@ public class HomeActivity extends ActionBarActivity {
                     }
                     swipeLayout.setRefreshing(false);
                     break;
-                //if success thread
-                //set last sync
-                //queary data
-                //push to server
-
                 case BluetoothDataService.FAILED:
                     Log.d("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
                     Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
@@ -385,47 +369,38 @@ public class HomeActivity extends ActionBarActivity {
                     startProgressAnim(todayMinutes);
 
                     swipeLayout.setRefreshing(false);
-                    AlertDialog.Builder builder =  new AlertDialog.Builder(HomeActivity.this);
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.setTitle("Oooppss!!");
-                    alertDialog.setMessage("The watch might be powered off or out of range\nPlease turn on the watch, bring it nearby and try again");
-                    alertDialog.setCanceledOnTouchOutside(false);
-                    alertDialog.show();
-                    // Must call show() prior to fetching text view
-                    TextView messageView = (TextView)alertDialog.findViewById(android.R.id.message);
-                    messageView.setGravity(Gravity.CENTER);
-
-//                    bluetoothDataService.stop();
-
+                    if(!isFinishing()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.setTitle("Oooppss!!");
+                        alertDialog.setMessage("The watch might be powered off or out of range\nPlease turn on the watch, bring it nearby and try again");
+                        alertDialog.setCanceledOnTouchOutside(false);
+                        alertDialog.show();
+                        TextView messageView = (TextView) alertDialog.findViewById(android.R.id.message);
+                        messageView.setGravity(Gravity.CENTER);
+                    }
                     Log.d("handler", "failed");
                     break;
 
-                //if failed
-                //keluar sync failed
                 case BluetoothDataService.STOPPED:
                     Log.d("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
                     Toast.makeText(HomeActivity.this, msg.getData().getString(BluetoothDataService.MESSAGE), Toast.LENGTH_LONG);
                     syncInfo.setText("Last Update: " + lastSync);
                     todayMinutes =db.getTodayMinutes();
                     startProgressAnim(todayMinutes);
-
-
                     swipeLayout.setRefreshing(false);
-//                    bluetoothDataService.stop();
-
                     Log.d("handler","stopped");
                     break;
                 case BluetoothDataService.READING_PROGRESS:
                     syncInfo.setText(msg.getData().getString(BluetoothDataService.MESSAGE));
                     Log.d("bluetooth", msg.getData().getString(BluetoothDataService.MESSAGE));
                     break;
-
             }
         }
     };

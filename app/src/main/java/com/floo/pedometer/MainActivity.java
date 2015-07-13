@@ -174,7 +174,8 @@ public class MainActivity extends ActionBarActivity{
             HttpConnectionParams.setSoTimeout(myParams, 10000);
             HttpClient httpclient = new DefaultHttpClient(myParams );
             JSONObject jsonObj = new JSONObject();
-            String url = "http://development.ayowes.com/pedobackend/public/api/auth";
+            //String url = "http://development.ayowes.com/pedobackend/public/api/auth";
+            String url = "http://www.datatestserversg.com/api/auth";
 
             try {
 

@@ -171,6 +171,8 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
                 }
             }
         }
+        cal.setTime(new Date());
+        savedWeek = cal.get(Calendar.WEEK_OF_YEAR);
         pref.setUserPreferences(UserPreferences.KEY_LAST_BADGE_DATE,lastBadgeDate);
         pref.setUserPreferences(UserPreferences.KEY_WEEK,Integer.toString(savedWeek));
         pref.setUserPreferences(UserPreferences.KEY_WIN_PLATINUM_WEEK,Integer.toString(lastPlatinumWeek));
