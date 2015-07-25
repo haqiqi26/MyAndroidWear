@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,15 +40,13 @@ import java.io.IOException;
 public class MainActivity extends ActionBarActivity{
     DatabaseHandler db;
     Button login;
-    SwipeRefreshLayout refreshLayout;
     UserPreferences pref;
     EditText usernameEdit,pass;
     BluetoothAdapter bluetoothAdapter;
 
     public static final boolean ALLOW_CHANGE_DEVICE = false;//false to hide,true to show
-    public static final String FIRST_SYNC_TIME = "2015-07-02 10:15:00";//set the oldest data
+    public static final String FIRST_SYNC_TIME = "2015-07-23 10:15:00";//set the oldest data
     public static final boolean SHOW_BADGE_CONGRAT_EVERY_SYNC = false;//true to show every sync
-    public static final boolean DATA_CONTAIN_LUXREADING = false;//data from watch contain luxreading
 
 
     String bluetoothAddr;

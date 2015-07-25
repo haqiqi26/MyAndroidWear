@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.media.Image;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ public class CongratsActivity extends ActionBarActivity {
 
     ImageView homeButton,badge;
     TextView congratsMessage;
+    UserPreferences pref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +28,9 @@ public class CongratsActivity extends ActionBarActivity {
         congratsMessage = (TextView) findViewById(R.id.congratsMessage);
         int GOLD=1,PLATINUM=2;
         String BADGE_TYPE = "badgeType";
+        pref = new UserPreferences(CongratsActivity.this);
+        Log.e("congratsPref", pref.getUserPreferences(UserPreferences.KEY_APP_STATE));
+
 
         int x = getIntent().getExtras().getInt(BADGE_TYPE);
 
@@ -41,7 +46,6 @@ public class CongratsActivity extends ActionBarActivity {
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserPreferences pref = new UserPreferences(CongratsActivity.this);
                 if(pref.getUserPreferences(UserPreferences.KEY_APP_STATE).equals(UserPreferences.APP_RUNNING))
                 {
                     finish();

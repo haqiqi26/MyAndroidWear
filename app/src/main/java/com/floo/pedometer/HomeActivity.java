@@ -3,21 +3,16 @@ package com.floo.pedometer;
 import com.baoyz.widget.PullRefreshLayout;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.KeyguardManager;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,7 +38,6 @@ public class HomeActivity extends ActionBarActivity {
     ProgressBar progressBar;
     ImageButton chartButton,seedButton,homeButton;
     Spinner spinner;
-    MediaPlayer mp;
     DatabaseHandler db;
     MyTextView totalTime,textHome,tm;
     TextView syncInfo,pullInfo,adviceMessage;
@@ -59,14 +53,7 @@ public class HomeActivity extends ActionBarActivity {
     LinearLayout linerHead,chartWrapper;
 
     final int REQUEST_NEW_BT=1;
-    //Your activity will respond to this action String
-    //public static final String RECEIVE_UPDATE = "com.floo.pedometer.RECEIVE_UPDATE";
-
-    //LocalBroadcastManager bManager;
-
-    //int todayMinutes;
-
-
+    BluetoothAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +65,8 @@ public class HomeActivity extends ActionBarActivity {
         seedButton = (ImageButton) findViewById(R.id.seedButton);
         homeButton = (ImageButton) findViewById(R.id.home);
 
+        adapter = BluetoothAdapter.getDefaultAdapter();
+
         totalTime = (MyTextView) findViewById(R.id.progressText);
         textHome = (MyTextView) findViewById(R.id.textHome);
         tm = (MyTextView) findViewById(R.id.tm);
@@ -86,6 +75,8 @@ public class HomeActivity extends ActionBarActivity {
         swipeLayout = (PullRefreshLayout) findViewById(R.id.swipeRefresh);
         menuDrop = new ArrayAdapter<String>(HomeActivity.this, android.R.layout.simple_spinner_item);
         userPreferences = new UserPreferences(HomeActivity.this);
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
+        Log.e("homePref",userPreferences.getUserPreferences(UserPreferences.KEY_APP_STATE));
         syncInfo = (TextView) findViewById(R.id.syncInfo);
         pullInfo = (TextView) findViewById(R.id.pullInfo);
         adviceMessage = (TextView) findViewById(R.id.adviceMessage);
@@ -110,14 +101,6 @@ public class HomeActivity extends ActionBarActivity {
         }
         syncInfo.setText("Last Update: " + lastSync);
 
-
-        /*swipeLayout.setOnRefreshListener(HomeActivity.this);
-        swipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-        */
-
         if(deviceName!=null||deviceName.equals(""))
             menuDrop.add(deviceName);
         menuDrop.add("Pair with new watch");
@@ -125,7 +108,13 @@ public class HomeActivity extends ActionBarActivity {
 
         spinner.setAdapter(menuDrop);
 
-        device = getIntent().getExtras().getParcelable("selectedDevice");
+        if(getIntent().getExtras()!=null)
+            device = getIntent().getExtras().getParcelable("selectedDevice");
+        else
+        {
+            device = adapter.getRemoteDevice(userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS));
+        }
+
 
 
         swipeLayout.postDelayed(new Runnable() {
@@ -143,15 +132,7 @@ public class HomeActivity extends ActionBarActivity {
             }
         });
         swipeLayout.setRefreshStyle(PullRefreshLayout.STYLE_RING);
-/*
-        Intent service = new Intent(this,MyService.class);
-        startService(service);
 
-        bManager = LocalBroadcastManager.getInstance(this);
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(RECEIVE_UPDATE);
-        bManager.registerReceiver(bReceiver, intentFilter);
-*/
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -182,11 +163,12 @@ public class HomeActivity extends ActionBarActivity {
         seedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new SoundPlayer().execute();
+                new ButtonSound(HomeActivity.this).execute();
                 Intent i = new Intent(HomeActivity.this,SeedActivity.class);
                 //i.putExtra("anim id in", R.anim.up_in);
                 //i.putExtra("anim id out", R.anim.up_out);
                 startActivity(i);
+                finish();
                 //overridePendingTransition(R.anim.down_in, R.anim.down_out);
 
             }
@@ -195,6 +177,7 @@ public class HomeActivity extends ActionBarActivity {
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                new ButtonSound(HomeActivity.this).execute();
                 RBLeft.setVisibility(View.VISIBLE);
                 RBRight.setVisibility(View.VISIBLE);
                 RBCenter.setVisibility(View.GONE);
@@ -216,16 +199,15 @@ public class HomeActivity extends ActionBarActivity {
         chartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new SoundPlayer().execute();
+                new ButtonSound(HomeActivity.this).execute();
 
                 if(db.getUserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID))==null)
                 {
                     db.addUserBadgeData(new UserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID), 0, 0));
                 }
-
-
                 Intent i = new Intent(HomeActivity.this,ChartActivity.class);
                 startActivity(i);
+                finish();
             }
         });
     }
@@ -249,20 +231,6 @@ public class HomeActivity extends ActionBarActivity {
         }
     }
 
-    /*
-    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(RECEIVE_UPDATE)) {
-                lastSync = intent.getExtras().getString("latestUpdate");
-                syncInfo.setText("Last Updated: "+lastSync);
-                int todayMinutes =db.getTodayMinutes();
-                startProgressAnim(todayMinutes);
-                //Do something with the string
-            }
-        }
-    };*/
-
     void startProgressAnim(int _todayMinutes){
         if(_todayMinutes<180)
         {
@@ -278,6 +246,8 @@ public class HomeActivity extends ActionBarActivity {
             animation.start();
 
             double progressValue = ((double)_todayMinutes/(double)180)*150;
+            if(_todayMinutes>360)
+                progressValue=300;
 
             ObjectAnimator animation2 = ObjectAnimator.ofInt(progressBar, "progress", 1, (int)Math.round(progressValue));
             animation2.setDuration(2000); //in milliseconds
@@ -290,8 +260,9 @@ public class HomeActivity extends ActionBarActivity {
     protected void onDestroy() {
         super.onDestroy();
         userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
-        //bManager.unregisterReceiver(bReceiver);
-        bluetoothDataService.stop();
+        Log.e("homePref", userPreferences.getUserPreferences(UserPreferences.KEY_APP_STATE));
+        if(bluetoothDataService!=null)
+            bluetoothDataService.stop();
     }
 
    final Handler mHandler = new Handler(){
@@ -307,16 +278,17 @@ public class HomeActivity extends ActionBarActivity {
                     startProgressAnim(todayMinutes);
                     if(!latestDate.equals(""))
                     {
-                        CalculateBadge calculateBadge = new CalculateBadge(HomeActivity.this, lastSync);
-                        calculateBadge.execute();
-                        userPreferences.setUserPreferences(UserPreferences.KEY_LAST_SYNC, latestDate);
+                        String prevSync = lastSync;
                         lastSync = latestDate;
+                        userPreferences.setUserPreferences(UserPreferences.KEY_LAST_SYNC, latestDate);
+                        CalculateBadge calculateBadge = new CalculateBadge(HomeActivity.this, prevSync);
+                        calculateBadge.execute();
                         if(todayMinutes<=180)
                         {
                             if(todayMinutes<=120)
-                                adviceMessage.setText("Try harder.\nGo to the park tomorrow\nto hit your target\n");
+                                adviceMessage.setText("Try harder.\nGo to the park\nto hit your target\n");
                             else
-                                adviceMessage.setText("Keep it up! Try harder.\nYou can hit\nthe target tomorrow\n");
+                                adviceMessage.setText("Keep it up! Try harder.\nYou can hit\nthe target\n");
                             RBLeft.setVisibility(View.GONE);
                             RBRight.setVisibility(View.GONE);
                             RBCenter.setVisibility(View.VISIBLE);
@@ -328,21 +300,6 @@ public class HomeActivity extends ActionBarActivity {
                             adviceMessage.setVisibility(View.VISIBLE);
                             textHome.setVisibility(View.GONE);
                             tm.setVisibility(View.GONE);
-                        }
-                        else{
-
-                            if(MainActivity.SHOW_BADGE_CONGRAT_EVERY_SYNC) {
-                                if(Integer.parseInt(userPreferences.getUserPreferences(UserPreferences.KEY_COUNT_GOLD_WEEK))>3) {
-                                    Intent j = new Intent(HomeActivity.this, CongratsActivity.class);
-                                    j.putExtra("badgeType", 2);//show platinum
-                                    startActivity(j);
-                                }
-                                else {
-                                    Intent i = new Intent(HomeActivity.this, CongratsActivity.class);
-                                    i.putExtra("badgeType", 1);//show gold
-                                    startActivity(i);
-                                }
-                            }
                         }
                         Toast.makeText(HomeActivity.this, "Updated "+lastSync,Toast.LENGTH_LONG).show();
                         syncInfo.setText("Last Updated: "+lastSync);
@@ -379,7 +336,10 @@ public class HomeActivity extends ActionBarActivity {
                         });
                         AlertDialog alertDialog = builder.create();
                         alertDialog.setTitle("Oooppss!!");
-                        alertDialog.setMessage("The watch might be powered off or out of range\nPlease turn on the watch, bring it nearby and try again");
+                        if(!adapter.isEnabled())
+                            alertDialog.setMessage("The bluetooth might be powered off\nPlease turn on the bluetooth and try again");
+                        else
+                            alertDialog.setMessage("The watch might be powered off or out of range\nPlease turn on the watch, bring it nearby and try again");
                         alertDialog.setCanceledOnTouchOutside(false);
                         alertDialog.show();
                         TextView messageView = (TextView) alertDialog.findViewById(android.R.id.message);
@@ -406,41 +366,17 @@ public class HomeActivity extends ActionBarActivity {
     };
 
     public void doRefresh() {
-        //swipeLayout.setRefreshing(true);
         syncInfo.setText("Syncing...");
         bluetoothDataService = new BluetoothDataService(HomeActivity.this,mHandler);
         Log.d("lastsyncpref", lastSync);
         bluetoothDataService.setLastSync(lastSync);
-        bluetoothDataService.connect(device,true);
-    }
-
-    private class SoundPlayer extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            mp = MediaPlayer.create(HomeActivity.this, Uri.parse("/system/media/audio/ui/Effect_Tick.ogg"));
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mp.release();
-                }
-
-            });
-            mp.start();
-            return null;
-        }
+        bluetoothDataService.connect(device, true);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
     }
 
     @Override

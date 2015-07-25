@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Handler;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,7 +47,7 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
                 .setContentTitle("Congratulations!")
                 .setContentText("You Have Won a Badge")
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.home_icon))
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
                 .setContentIntent(pIntent)
                 .build();
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
@@ -65,20 +64,18 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
         db = DatabaseHandler.getInstance(context);
         UserPreferences pref = new UserPreferences(context);
         List<OutdoorData> datas = db.getWhereAllOutdoorsDatas(lastSync.split(" ")[0]);
-        String lastBadgeDate = pref.getUserPreferences(UserPreferences.KEY_LAST_BADGE_DATE);
-        String userID = pref.getUserPreferences(UserPreferences.KEY_USER_ID);
-        int savedWeek=1;
-        int goldWeek=0;
-        int lastPlatinumWeek=0;
-        if(!pref.getUserPreferences(UserPreferences.KEY_WEEK).equals(""))
-            savedWeek = Integer.parseInt(pref.getUserPreferences(UserPreferences.KEY_WEEK));
-        if(!pref.getUserPreferences(UserPreferences.KEY_COUNT_GOLD_WEEK).equals(""))
-            goldWeek = Integer.parseInt(pref.getUserPreferences(UserPreferences.KEY_COUNT_GOLD_WEEK));
-        if(!pref.getUserPreferences(UserPreferences.KEY_WIN_PLATINUM_WEEK).equals(""))
-            lastPlatinumWeek = Integer.parseInt(pref.getUserPreferences(UserPreferences.KEY_WIN_PLATINUM_WEEK));
+        String lastGoldBadgeDate = pref.getUserPreferences(UserPreferences.KEY_LAST_GOLD_BADGE_DATE);
+        String lastPlatinumBadgeDate=pref.getUserPreferences(UserPreferences.KEY_LAST_PLATINUM_BADGE_DATE);
 
-        String prevLastBadge = lastBadgeDate;
-        int prevLastPlatinumWeek = lastPlatinumWeek;
+        String prevGoldBadgeDate = lastGoldBadgeDate;
+        String prevPlatinumBadgeDate = lastPlatinumBadgeDate;
+
+        String userID = pref.getUserPreferences(UserPreferences.KEY_USER_ID);
+        int goldCounter=0;
+        if(!pref.getUserPreferences(UserPreferences.KEY_COUNT_GOLD).equals(""))
+            goldCounter = Integer.parseInt(pref.getUserPreferences(UserPreferences.KEY_COUNT_GOLD));
+
+
 
         UserBadge userBadge = db.getUserBadge(userID);
         UserTree userTree = db.getUserTree(userID);
@@ -103,80 +100,58 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
 
         for(OutdoorData data:datas)
         {
-            if(!lastBadgeDate.equals("")) {
-                try {
-                    Date prev = sdf.parse(lastBadgeDate);
-                    Date current = sdf.parse(data.getTimeStamp());
-                    cal.setTime(current);
-                    int currentWeek = cal.get(Calendar.WEEK_OF_YEAR);
+            if(data.getMinutes()>180&&lastGoldBadgeDate.compareTo(data.getTimeStamp())<0)
+            {
+                goldCount++;
+                lastProgressTree++;
+                createNotification(GOLD);
 
-                    if (prev.before(current)) {
-                        if(data.getMinutes()>180){
-                            lastBadgeDate = data.getTimeStamp();
-                            goldCount++;
-                            lastProgressTree++;
-                            createNotification(GOLD);
-                            if(savedWeek==currentWeek)
-                            {
-                                goldWeek++;
-                                if(goldWeek>3&&lastPlatinumWeek!=currentWeek)
-                                {
-                                    platinumCount++;
-                                    lastPlatinumWeek=currentWeek;
-                                    createNotification(PLATINUM);
-                                }
-                            }
-                            else
-                            {
-                                goldWeek=1;
-                            }
-
-                        }
-                        savedWeek =currentWeek;
-
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-            else{
-                if(data.getMinutes()>180){
-                    lastBadgeDate = data.getTimeStamp();
-                    goldCount++;
-                    lastProgressTree++;
-                    createNotification(GOLD);
+                if(!lastGoldBadgeDate.equals(""))
+                {
                     try {
-                        Date current = sdf.parse(lastBadgeDate);
-                        cal.setTime(current);
-                        int currentWeek = cal.get(Calendar.WEEK_OF_YEAR);
-                        if(savedWeek==currentWeek)
-                        {
-                            goldWeek++;
-                            if(goldWeek>3&&lastPlatinumWeek!=currentWeek)
-                            {
-                                platinumCount++;
-                                lastPlatinumWeek=currentWeek;
-                                createNotification(PLATINUM);
-                            }
-                        }
+                        Date prev = sdf.parse(lastGoldBadgeDate);
+                        Date current = sdf.parse(data.getTimeStamp());
+
+                        cal.setTime(prev);
+                        cal.add(Calendar.DATE,1);
+                        Date prevAddOne = cal.getTime();
+
+                        if(prevAddOne.compareTo(current)==0)
+                            goldCounter++;
                         else
+                            goldCounter=0;
+
+                        if(goldCounter>=3)
                         {
-                            goldWeek=1;
+                            platinumCount++;
+                            createNotification(PLATINUM);
+                            lastPlatinumBadgeDate = data.getTimeStamp();
+                            goldCounter=0;
                         }
-                        savedWeek =currentWeek;
+
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
 
                 }
+                else
+                {
+                    goldCounter++;
+                    if(goldCounter>=3)
+                    {
+                        platinumCount++;
+                        createNotification(PLATINUM);
+                        lastPlatinumBadgeDate = data.getTimeStamp();
+                        goldCounter=0;
+                    }
+                }
+
+                lastGoldBadgeDate=data.getTimeStamp();
             }
         }
-        cal.setTime(new Date());
-        savedWeek = cal.get(Calendar.WEEK_OF_YEAR);
-        pref.setUserPreferences(UserPreferences.KEY_LAST_BADGE_DATE,lastBadgeDate);
-        pref.setUserPreferences(UserPreferences.KEY_WEEK,Integer.toString(savedWeek));
-        pref.setUserPreferences(UserPreferences.KEY_WIN_PLATINUM_WEEK,Integer.toString(lastPlatinumWeek));
-        pref.setUserPreferences(UserPreferences.KEY_COUNT_GOLD_WEEK,Integer.toString(goldWeek));
+        pref.setUserPreferences(UserPreferences.KEY_LAST_GOLD_BADGE_DATE, lastGoldBadgeDate);
+        pref.setUserPreferences(UserPreferences.KEY_LAST_PLATINUM_BADGE_DATE, lastPlatinumBadgeDate);
+        pref.setUserPreferences(UserPreferences.KEY_COUNT_GOLD,Integer.toString(goldCounter));
 
         completedTrees=completedTrees+(lastProgressTree/10);
         lastProgressTree = lastProgressTree%10;
@@ -188,40 +163,25 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
         db.updateUserBadgeData(userBadge);
         db.updateUserTreeData(userTree);
 
-        //check if today get gold
-        /*
-        * if lastbadge == today and lastsavedbadge!=lastbadge
-        * return gold screen
-        * */
-        //check if today get platinum
-        /*
-        * if lastplatinumweek == thisweek and lastsavedplatinumweek != lastplatinumweek
-        * return platinum screen
-        * */
-        //check if today get nothing
-        /*
-        * return nothing to show
-        * */
-
         String dateNow = sdf.format(new Date());
-        cal.setTime(new Date());
 
-        if(lastPlatinumWeek==cal.get(Calendar.WEEK_OF_YEAR)
-                &&lastPlatinumWeek!=prevLastPlatinumWeek
-                &&!MainActivity.SHOW_BADGE_CONGRAT_EVERY_SYNC)
+        if(MainActivity.SHOW_BADGE_CONGRAT_EVERY_SYNC) {
+            if (lastPlatinumBadgeDate.equals(dateNow))
+                return "platinum";
+            else if (lastGoldBadgeDate.equals(dateNow))
+                return "gold";
+            else
+                return "";
+        }
+        else
         {
-            return "platinum";
+            if (lastPlatinumBadgeDate.equals(dateNow)&&!lastPlatinumBadgeDate.equals(prevPlatinumBadgeDate))
+                return "platinum";
+            else if (lastGoldBadgeDate.equals(dateNow)&&!lastGoldBadgeDate.equals(prevGoldBadgeDate))
+                return "gold";
+            else
+                return "";
         }
-        else if(lastBadgeDate.equals(dateNow)
-                &&!prevLastBadge.equals(lastBadgeDate)
-                &&!MainActivity.SHOW_BADGE_CONGRAT_EVERY_SYNC)
-        {
-            return "gold";
-        }
-        else{
-            return "";
-        }
-
     }
 
     @Override

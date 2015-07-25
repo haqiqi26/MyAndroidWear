@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -369,17 +370,15 @@ public class BluetoothDataService {
             int minute = (int)TimeUnit.MILLISECONDS.toMinutes(diff);
             String latestDate="";
             DatabaseHandler db = DatabaseHandler.getInstance(context);
-            int lastMinute = db.getCheckpointMinutes(lastSync);
-            //Log.e("lastminute",lastMinute+"");
             List<OutdoorData> rows = new ArrayList<OutdoorData>();
 
             while (true) {
-                byte []pdu;
-                if(MainActivity.DATA_CONTAIN_LUXREADING)
-                    pdu = new byte[17];
-                else
-                    pdu = new byte[9];
+                byte []pdu =new byte[17];
+                int buffersize=0;
                 try {
+                    buffersize = mmDinput.available();
+                    Log.d(TAG, "size: "+buffersize);
+                    pdu = new byte[buffersize];
                     mmDinput.readFully(pdu);
                 }catch (IOException e){
                     Log.e(TAG, e.getMessage());
@@ -391,18 +390,26 @@ public class BluetoothDataService {
                     break;
                 }
                 ByteBuffer bb=ByteBuffer.wrap(pdu);
-                long timepoint=bb.getLong();
+
+                long timepoint=-1;
+                if (bb.remaining()>=8)
+                    timepoint = bb.getLong();
 
                 if (communicationComplete(timepoint, id)) {
                     //connectionLost(); // drop the current connection
 
                     // Send message to activity
+                    Message msg = handler.obtainMessage(BluetoothDataService.READING_PROGRESS);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(BluetoothDataService.MESSAGE, "Saving...");
+                    msg.setData(bundle);
+                    handler.sendMessage(msg);
                     for(OutdoorData row:rows)
                     {
                         db.addOutdoorData(row);
                     }
-                    Message msg = handler.obtainMessage(BluetoothDataService.DONE_READING);
-                    Bundle bundle = new Bundle();
+                    msg = handler.obtainMessage(BluetoothDataService.DONE_READING);
+                    bundle = new Bundle();
                     bundle.putString(BluetoothDataService.MESSAGE, latestDate);
                     msg.setData(bundle);
                     handler.sendMessage(msg);
@@ -419,25 +426,33 @@ public class BluetoothDataService {
                     }
                     break;
                 }else {
-                    byte outdoors_y_n = bb.get();
+                    byte outdoors_y_n=0;
+                    if (bb.remaining()>=1)
+                        outdoors_y_n = bb.get();
                     double luxReading=0.0;
-                    if(MainActivity.DATA_CONTAIN_LUXREADING)
+                    if(bb.remaining()>=8)
                         luxReading = bb.getDouble();
                     latestDate = datetimeformat.format(new Date(timepoint));
-                    String display = latestDate + " value: " + outdoors_y_n;
+                    String display = latestDate + " value: " + outdoors_y_n+" luxreading: "+luxReading;
                     if(outdoors_y_n>0)
                     {
-                        if(id==0)
-                        {
-                            if(lastMinute==0)
+                        Log.e(TAG, "lastSync: "+lastSync+" date"+latestDate);
+                        try {
+                            Date fromWatchDate = datetimeformat.parse(latestDate);
+                            Date lastDate = datetimeformat.parse(lastSync);
+
+                            if(fromWatchDate.before(lastDate)||latestDate.equals(lastSync))
                             {
+                                Log.e(TAG,"reject");
+                            }
+                            else {
                                 OutdoorData row = new OutdoorData(latestDate,outdoors_y_n,0,luxReading);
                                 rows.add(row);
+                                Log.e(TAG, "save");
                             }
-                        }
-                        else {
-                            OutdoorData row = new OutdoorData(latestDate,outdoors_y_n,0,luxReading);
-                            rows.add(row);
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
                         }
                     }
                     counter++;
@@ -445,11 +460,11 @@ public class BluetoothDataService {
                     int percent = (int)Math.round(progress*100);
                     Message msg = handler.obtainMessage(BluetoothDataService.READING_PROGRESS);
                     Bundle bundle = new Bundle();
-                    bundle.putString(BluetoothDataService.MESSAGE, "Syncing... "+percent+"%");
+                    bundle.putString(BluetoothDataService.MESSAGE, "Syncing... " + percent + "%");
                     msg.setData(bundle);
                     handler.sendMessage(msg);
                     //Log.e("counter",counter+" "+Math.round(progress)+" "+percent+" "+diff);
-                    Log.d(TAG, display);
+                    Log.e(TAG, "lastSync: "+lastSync+" "+display);
                     id++;
 
                 }

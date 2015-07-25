@@ -65,6 +65,7 @@ public class BluetoothActivity extends ActionBarActivity {
 
             }
         }
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
 
 
 
@@ -160,7 +161,6 @@ public class BluetoothActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
 
         turnOnBT();
         //listPairedDevices();
@@ -304,13 +304,6 @@ public class BluetoothActivity extends ActionBarActivity {
         Method createBondMethod = class1.getMethod("createBond");
         Boolean returnValue = (Boolean) createBondMethod.invoke(btDevice);
         return returnValue.booleanValue();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
-
     }
 
     @Override

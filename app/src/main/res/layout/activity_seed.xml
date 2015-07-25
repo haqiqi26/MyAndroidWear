@@ -79,139 +79,71 @@
                     android:layout_height="match_parent"
                     android:id="@+id/imageWrapper"
                     android:orientation="horizontal">
-                    <!--ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/trees_grown"
-                        android:layout_gravity="center"/>
-                    <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
-                        android:src="@drawable/seed2"
-                        android:layout_gravity="center"/-->
-
                 </LinearLayout>
             </HorizontalScrollView>
         </LinearLayout>
 
     </LinearLayout>
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_weight="20"
+        android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:gravity="center">
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <View
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:background="@drawable/circle_grey"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"/>
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="32dp"
-                android:src="@drawable/home_icon"
-                android:id="@+id/seedBackButton"
-                android:layout_centerHorizontal="true"/>
-        </RelativeLayout>
+        android:layout_weight="20"
+        android:weightSum="90">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="30">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <View
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:background="@drawable/circle_grey2"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/view3"/>
+                <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/home"
+                    android:background="@drawable/home_icon"/>
+            </RelativeLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="30">
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="30">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <View
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:background="@drawable/circle_grey2"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/view1"/>
+                <ImageButton
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical"
+                    android:id="@+id/chartButton"
+                    android:background="@drawable/chart_button"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+
     </LinearLayout>
 
 </LinearLayout>

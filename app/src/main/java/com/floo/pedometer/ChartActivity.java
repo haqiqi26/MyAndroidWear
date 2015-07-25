@@ -1,6 +1,7 @@
 package com.floo.pedometer;
 
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -35,6 +37,7 @@ public class ChartActivity extends ActionBarActivity {
     List<OutdoorData> outdoorDataList;
     TextView platinumCount,goldCount;
     Typeface tf;
+    ImageView home,seed;
     DatabaseHandler db;
     int myWidth =100;
     int myHeight =100;
@@ -57,6 +60,7 @@ public class ChartActivity extends ActionBarActivity {
         UserBadge userBadge = db.getUserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID));
         outdoorDataList  = db.getAllOutdoorsDatas();
 
+        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
 
         platinumCount.setText(Integer.toString(userBadge.getPlatinumBadge()));
         goldCount.setText(Integer.toString(userBadge.getGoldBadge()));
@@ -222,20 +226,28 @@ public class ChartActivity extends ActionBarActivity {
 
             }
         });
-    }
+        home = (ImageView)findViewById(R.id.home);
+        seed = (ImageView)findViewById(R.id.seedButton);
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ButtonSound(ChartActivity.this).execute();
+                Intent i = new Intent(ChartActivity.this,HomeActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
+        seed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ButtonSound(ChartActivity.this).execute();
+                Intent i = new Intent(ChartActivity.this, SeedActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
     }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();

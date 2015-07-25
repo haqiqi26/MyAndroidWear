@@ -1,5 +1,6 @@
 package com.floo.pedometer;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -9,12 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 
 public class SeedActivity extends ActionBarActivity {
 
-    ImageView backText,seedImage;
+    ImageView home,seedImage,chart;
     LinearLayout imageWrapper;
     DatabaseHandler db;
     UserPreferences userPreferences;
@@ -23,7 +23,8 @@ public class SeedActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seed);
-        backText = (ImageView) findViewById(R.id.seedBackButton);
+        home = (ImageView) findViewById(R.id.home);
+        chart = (ImageView) findViewById(R.id.chartButton);
         seedImage = (ImageView) findViewById(R.id.seedImage);
         imageWrapper = (LinearLayout) findViewById(R.id.imageWrapper);
         seedSource = new int[]{
@@ -38,16 +39,33 @@ public class SeedActivity extends ActionBarActivity {
                 R.drawable.seeds9,
                 R.drawable.seeds10
         };
-        backText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+
         db = DatabaseHandler.getInstance(SeedActivity.this);
         userPreferences = new UserPreferences(SeedActivity.this);
         String id = userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID);
         UserTree tree = db.getUserTree(id);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ButtonSound(SeedActivity.this).execute();
+                Intent i = new Intent(SeedActivity.this,HomeActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
+        chart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ButtonSound(SeedActivity.this).execute();
+                if(db.getUserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID))==null)
+                {
+                    db.addUserBadgeData(new UserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID), 0, 0));
+                }
+                Intent i = new Intent(SeedActivity.this,ChartActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
         if(tree==null)
         {
             tree = new UserTree(id,0,0);
