@@ -456,8 +456,12 @@ public class BluetoothDataService {
                         }
                     }
                     counter++;
-                    double progress = (double)counter/minute;
-                    int percent = (int)Math.round(progress*100);
+                    double progress=0;
+                    if(minute>0)
+                        progress = (double)counter/minute;
+                    int percent = 0;
+                    if(percent<=100&&percent>=0)
+                        percent = (int)Math.round(progress*100);
                     Message msg = handler.obtainMessage(BluetoothDataService.READING_PROGRESS);
                     Bundle bundle = new Bundle();
                     bundle.putString(BluetoothDataService.MESSAGE, "Syncing... " + percent + "%");

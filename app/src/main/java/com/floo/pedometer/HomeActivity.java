@@ -115,11 +115,14 @@ public class HomeActivity extends ActionBarActivity {
             device = adapter.getRemoteDevice(userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS));
         }
 
-
+        progressBar.setRotation(135);
+        progressBar.setProgress(0);
+        progressBar.setSecondaryProgress(0);
 
         swipeLayout.postDelayed(new Runnable() {
             @Override
             public void run() {
+                userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
                 swipeLayout.setRefreshing(true);
                 doRefresh();
             }
@@ -151,7 +154,6 @@ public class HomeActivity extends ActionBarActivity {
 
             }
         });
-        progressBar.setRotation(135);
 
         if(!MainActivity.ALLOW_CHANGE_DEVICE)
         {
@@ -165,12 +167,8 @@ public class HomeActivity extends ActionBarActivity {
             public void onClick(View v) {
                 new ButtonSound(HomeActivity.this).execute();
                 Intent i = new Intent(HomeActivity.this,SeedActivity.class);
-                //i.putExtra("anim id in", R.anim.up_in);
-                //i.putExtra("anim id out", R.anim.up_out);
                 startActivity(i);
                 finish();
-                //overridePendingTransition(R.anim.down_in, R.anim.down_out);
-
             }
         });
 
