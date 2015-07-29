@@ -281,13 +281,30 @@ public class HomeActivity extends ActionBarActivity {
                         userPreferences.setUserPreferences(UserPreferences.KEY_LAST_SYNC, latestDate);
                         CalculateBadge calculateBadge = new CalculateBadge(HomeActivity.this, prevSync);
                         calculateBadge.execute();
+                        String notifMessage = "";
                         if(todayMinutes<=180)
                         {
                             if(todayMinutes<=120)
-                                adviceMessage.setText("Try harder.\nGo to the park\nto hit your target\n");
+                                notifMessage= "Try harder.\nGo to the park\nto hit your target";
                             else
-                                adviceMessage.setText("Keep it up! Try harder.\nYou can hit\nthe target\n");
-                            RBLeft.setVisibility(View.GONE);
+                                notifMessage= "Keep it up! Try harder.\nYou can hit\nthe target";
+
+                            adviceMessage.setText(notifMessage+"\n");
+                            AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            AlertDialog alertDialog = builder.create();
+                            alertDialog.setTitle("Synchronization completed");
+                            alertDialog.setMessage(notifMessage);
+                            alertDialog.setCanceledOnTouchOutside(false);
+                            alertDialog.show();
+                            TextView messageView = (TextView) alertDialog.findViewById(android.R.id.message);
+                            messageView.setGravity(Gravity.CENTER);
+                            /*RBLeft.setVisibility(View.GONE);
                             RBRight.setVisibility(View.GONE);
                             RBCenter.setVisibility(View.VISIBLE);
                             linerHead.setVisibility(View.GONE);
@@ -297,7 +314,7 @@ public class HomeActivity extends ActionBarActivity {
                             chartWrapper.setLayoutParams(params);
                             adviceMessage.setVisibility(View.VISIBLE);
                             textHome.setVisibility(View.GONE);
-                            tm.setVisibility(View.GONE);
+                            tm.setVisibility(View.GONE);*/
                         }
                         Toast.makeText(HomeActivity.this, "Updated "+lastSync,Toast.LENGTH_LONG).show();
                         syncInfo.setText("Last Updated: "+lastSync);
@@ -325,6 +342,10 @@ public class HomeActivity extends ActionBarActivity {
 
                     swipeLayout.setRefreshing(false);
                     if(!isFinishing()) {
+                        if(!adapter.isEnabled()) {
+                            Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                            startActivityForResult(turnOnIntent, 2);
+                        }
                         AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
                         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
@@ -333,11 +354,8 @@ public class HomeActivity extends ActionBarActivity {
                             }
                         });
                         AlertDialog alertDialog = builder.create();
-                        alertDialog.setTitle("Oooppss!!");
-                        if(!adapter.isEnabled())
-                            alertDialog.setMessage("The bluetooth might be powered off\nPlease turn on the bluetooth and try again");
-                        else
-                            alertDialog.setMessage("The watch might be powered off or out of range\nPlease turn on the watch, bring it nearby and try again");
+                        alertDialog.setTitle("Synchronization interrupted");
+                        alertDialog.setMessage("Data is not synced yet.\nPlease try again.\nThanks.");
                         alertDialog.setCanceledOnTouchOutside(false);
                         alertDialog.show();
                         TextView messageView = (TextView) alertDialog.findViewById(android.R.id.message);
