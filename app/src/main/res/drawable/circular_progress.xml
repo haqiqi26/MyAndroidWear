@@ -13,6 +13,7 @@
     <item android:id="@android:id/progress">
             <shape
                 android:innerRadiusRatio="3.0"
+                android:useLevel="true"
                 android:shape="ring"
                 android:thicknessRatio="7.0">
                 <solid android:color="@color/chartgreen" />
@@ -21,6 +22,7 @@
     <item android:id="@android:id/secondaryProgress">
             <shape
                 android:innerRadiusRatio="3.0"
+                android:useLevel="true"
                 android:shape="ring"
                 android:thicknessRatio="7.0">
                 <solid android:color="@color/orange" />
