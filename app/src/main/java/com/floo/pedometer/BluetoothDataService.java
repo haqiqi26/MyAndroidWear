@@ -374,12 +374,13 @@ public class BluetoothDataService {
 
             while (true) {
                 byte []pdu =new byte[17];
-                int buffersize=0;
+                //int buffersize=0;
                 try {
-                    buffersize = mmDinput.available();
+                    int buffersize = mmDinput.available();
                     Log.d(TAG, "size: "+buffersize);
-                    pdu = new byte[buffersize];
-                    mmDinput.readFully(pdu);
+                    //pdu = new byte[buffersize];
+                    mmDinput.read(pdu);
+                    //mmDinput.readFully(pdu);
                 }catch (IOException e){
                     Log.e(TAG, e.getMessage());
                     Message msg = handler.obtainMessage(BluetoothDataService.FAILED);
@@ -399,17 +400,17 @@ public class BluetoothDataService {
                     //connectionLost(); // drop the current connection
 
                     // Send message to activity
-                    Message msg = handler.obtainMessage(BluetoothDataService.READING_PROGRESS);
+                    /*Message msg = handler.obtainMessage(BluetoothDataService.READING_PROGRESS);
                     Bundle bundle = new Bundle();
                     bundle.putString(BluetoothDataService.MESSAGE, "Saving...");
                     msg.setData(bundle);
-                    handler.sendMessage(msg);
+                    handler.sendMessage(msg);*/
                     for(OutdoorData row:rows)
                     {
                         db.addOutdoorData(row);
                     }
-                    msg = handler.obtainMessage(BluetoothDataService.DONE_READING);
-                    bundle = new Bundle();
+                    Message msg = handler.obtainMessage(BluetoothDataService.DONE_READING);
+                    Bundle bundle = new Bundle();
                     bundle.putString(BluetoothDataService.MESSAGE, latestDate);
                     msg.setData(bundle);
                     handler.sendMessage(msg);
@@ -456,11 +457,11 @@ public class BluetoothDataService {
                         }
                     }
                     counter++;
-                    double progress=0;
-                    if(minute>0)
+                    double progress=0.0;
+                    if(minute!=0)
                         progress = (double)counter/minute;
-                    int percent = 0;
-                    if(percent<=100&&percent>=0)
+                    int percent = 100;
+                    if(progress<=1.0&&progress>=0.0)
                         percent = (int)Math.round(progress*100);
                     Message msg = handler.obtainMessage(BluetoothDataService.READING_PROGRESS);
                     Bundle bundle = new Bundle();

@@ -108,12 +108,16 @@ public class HomeActivity extends ActionBarActivity {
 
         spinner.setAdapter(menuDrop);
 
-        if(getIntent().getExtras()!=null)
+        if(getIntent().getExtras()!=null) {
             device = getIntent().getExtras().getParcelable("selectedDevice");
+            Log.d("device","hello");
+        }
         else
         {
             device = adapter.getRemoteDevice(userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS));
+            Log.d("device","null");
         }
+        Log.d("device",userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME));
 
         progressBar.setRotation(135);
         progressBar.setProgress(0);
