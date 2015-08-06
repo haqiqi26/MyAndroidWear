@@ -117,11 +117,10 @@ public class HomeActivity extends ActionBarActivity {
             device = adapter.getRemoteDevice(userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_ADDRESS));
             Log.d("device","null");
         }
-        Log.d("device",userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME));
+        Log.d("device", userPreferences.getUserPreferences(UserPreferences.KEY_BLUETOOTH_NAME));
 
         progressBar.setRotation(135);
-        progressBar.setProgress(0);
-        progressBar.setSecondaryProgress(0);
+        startProgressAnim(db.getTodayMinutes());
 
         swipeLayout.postDelayed(new Runnable() {
             @Override
@@ -169,6 +168,8 @@ public class HomeActivity extends ActionBarActivity {
         seedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(bluetoothDataService!=null)
+                    bluetoothDataService.stop();
                 new ButtonSound(HomeActivity.this).execute();
                 Intent i = new Intent(HomeActivity.this,SeedActivity.class);
                 startActivity(i);
@@ -201,6 +202,8 @@ public class HomeActivity extends ActionBarActivity {
         chartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(bluetoothDataService!=null)
+                    bluetoothDataService.stop();
                 new ButtonSound(HomeActivity.this).execute();
 
                 if(db.getUserBadge(userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID))==null)
@@ -234,6 +237,7 @@ public class HomeActivity extends ActionBarActivity {
     }
 
     void startProgressAnim(int _todayMinutes){
+        totalTime.setText(Integer.toString(_todayMinutes / 60) + "h " + Integer.toString(_todayMinutes % 60) + "m");
         if(_todayMinutes<180)
         {
             double progressValue = ((double)_todayMinutes/(double)180)*150;
@@ -255,7 +259,6 @@ public class HomeActivity extends ActionBarActivity {
             animation2.setDuration(2000); //in milliseconds
             animation2.start();
         }
-        totalTime.setText(Integer.toString(_todayMinutes / 60) + "h " + Integer.toString(_todayMinutes % 60) + "m");
     }
 
     @Override
@@ -294,20 +297,21 @@ public class HomeActivity extends ActionBarActivity {
                                 notifMessage= "Keep it up! Try harder.\nYou can hit\nthe target";
 
                             adviceMessage.setText(notifMessage+"\n");
-                            AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
-                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            AlertDialog alertDialog = builder.create();
-                            alertDialog.setTitle("Synchronization completed");
-                            alertDialog.setMessage(notifMessage);
-                            alertDialog.setCanceledOnTouchOutside(false);
-                            alertDialog.show();
-                            TextView messageView = (TextView) alertDialog.findViewById(android.R.id.message);
-                            messageView.setGravity(Gravity.CENTER);
+                            if(!isFinishing()) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+                                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                AlertDialog alertDialog = builder.create();
+                                alertDialog.setTitle("Synchronization completed");
+                                alertDialog.setMessage(notifMessage);
+                                alertDialog.setCanceledOnTouchOutside(false);
+                                alertDialog.show();
+                                TextView messageView = (TextView) alertDialog.findViewById(android.R.id.message);
+                                messageView.setGravity(Gravity.CENTER);
                             /*RBLeft.setVisibility(View.GONE);
                             RBRight.setVisibility(View.GONE);
                             RBCenter.setVisibility(View.VISIBLE);
@@ -319,6 +323,7 @@ public class HomeActivity extends ActionBarActivity {
                             adviceMessage.setVisibility(View.VISIBLE);
                             textHome.setVisibility(View.GONE);
                             tm.setVisibility(View.GONE);*/
+                            }
                         }
                         Toast.makeText(HomeActivity.this, "Updated "+lastSync,Toast.LENGTH_LONG).show();
                         syncInfo.setText("Last Updated: "+lastSync);
