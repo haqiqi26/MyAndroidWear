@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by SONY_VAIO on 6/27/2015.
@@ -40,21 +41,31 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
         Intent intent = new Intent(context, CongratsActivity.class);
 
         intent.putExtra(BADGE_TYPE,type);
-        PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        intent.setAction(Long.toString(System.currentTimeMillis()));
+        PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-        Notification noti = new Notification.Builder(context)
-                .setContentTitle("Congratulations!")
-                .setContentText("You Have Won a Badge")
-                .setSmallIcon(R.mipmap.ic_launcher)
+        Notification.Builder builder = new Notification.Builder(context);
+        builder.setContentTitle("Congratulations!")
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher))
-                .setContentIntent(pIntent)
-                .build();
+                .setContentIntent(pIntent);
+        if(type==GOLD){
+            builder.setContentText("You Have Won a Gold Badge")
+                    .setSmallIcon(R.drawable.gold_notif_back);
+        }
+        else if(type==PLATINUM){
+            builder.setContentText("You Have Won a Platinum Badge")
+                    .setSmallIcon(R.drawable.platinum_notif_back);
+        }
+        Notification noti = builder.build();
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
         // hide the notification after its selected
         noti.flags |= Notification.FLAG_AUTO_CANCEL;
 
-        notificationManager.notify(0, noti);
+        Random random = new Random();
+        int m = random.nextInt(9999 - 1000) + 1000;
+
+        notificationManager.notify(m, noti);
 
     }
 
@@ -119,7 +130,7 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
                         if(prevAddOne.compareTo(current)==0)
                             goldCounter++;
                         else
-                            goldCounter=0;
+                            goldCounter=1;
 
                         if(goldCounter>=3)
                         {
@@ -190,6 +201,12 @@ public class CalculateBadge extends AsyncTask<Void,Void,String> {
         if(!result.equals(""))
         {
             if(result.equals("platinum")){
+                Intent goldIntent = new Intent(context,CongratsActivity.class);
+                goldIntent.putExtra(BADGE_TYPE,GOLD);
+                goldIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                //goldIntent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                context.getApplicationContext().startActivity(goldIntent);
+
                 Intent intent = new Intent(context,CongratsActivity.class);
                 intent.putExtra(BADGE_TYPE, PLATINUM);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

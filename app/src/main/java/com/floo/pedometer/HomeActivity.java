@@ -125,9 +125,15 @@ public class HomeActivity extends ActionBarActivity {
         swipeLayout.postDelayed(new Runnable() {
             @Override
             public void run() {
+                /*db.addOutdoorData(new OutdoorData("2015-08-07 10:15:00",181,0,0));
+                db.addOutdoorData(new OutdoorData("2015-08-09 10:15:00",181,0,0));
+                db.addOutdoorData(new OutdoorData("2015-08-10 10:15:00",181,0,0));
+                db.addOutdoorData(new OutdoorData("2015-08-11 10:15:00",181,0,0));
+*/
                 userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
                 swipeLayout.setRefreshing(true);
                 doRefresh();
+
             }
         }, 3000);
 
@@ -325,6 +331,24 @@ public class HomeActivity extends ActionBarActivity {
                             tm.setVisibility(View.GONE);*/
                             }
                         }
+						else{
+							if(!isFinishing()) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+                                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                AlertDialog alertDialog = builder.create();
+                                alertDialog.setTitle("Synchronization completed");
+                                alertDialog.setMessage("Congratulation.\nYou have won a badge");
+                                alertDialog.setCanceledOnTouchOutside(false);
+                                alertDialog.show();
+                                TextView messageView = (TextView) alertDialog.findViewById(android.R.id.message);
+                                messageView.setGravity(Gravity.CENTER);
+                            }
+						}
                         Toast.makeText(HomeActivity.this, "Updated "+lastSync,Toast.LENGTH_LONG).show();
                         syncInfo.setText("Last Updated: "+lastSync);
                     }
@@ -336,7 +360,7 @@ public class HomeActivity extends ActionBarActivity {
                     Log.d("handler", "done reading");
                     List<OutdoorData>unSyncData = db.getUnsyncOutdoorsDatas();
                     if(unSyncData.size()>0) {
-                        PushToServer pushToServer = new PushToServer(HomeActivity.this, userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID), "myPhoneID");//replace 1 with userID from login
+                        PushToServer pushToServer = new PushToServer(HomeActivity.this, userPreferences.getUserPreferences(UserPreferences.KEY_USER_ID), deviceName);
                         pushToServer.setUnsyncDatas(unSyncData);
                         pushToServer.execute();
                     }

@@ -45,7 +45,7 @@ public class MainActivity extends ActionBarActivity{
     BluetoothAdapter bluetoothAdapter;
 
     public static final boolean ALLOW_CHANGE_DEVICE = false;//false to hide,true to show
-    public static final String FIRST_SYNC_TIME = "2015-07-23 10:15:00";//set the oldest data
+    public static final String FIRST_SYNC_TIME = "2015-08-01 10:15:00";//set the oldest data
     public static final boolean SHOW_BADGE_CONGRAT_EVERY_SYNC = false;//true to show every sync
 
 

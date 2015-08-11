@@ -107,7 +107,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Inserting Row
         db.insert(TABLE_OUTDOOR_DATAS, null, values);
-        db.close(); // Closing database connection
+        //db.close(); // Closing database connection
     }
 
     public void addOutdoorDataToday(int minutes) {
@@ -123,7 +123,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Inserting Row
         db.insert(TABLE_OUTDOOR_DATAS, null, values);
-        db.close(); // Closing database connection
+        //db.close(); // Closing database connection
     }
 
 
@@ -219,7 +219,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_OUTDOOR_DATAS, KEY_OUTDOOR_ID + " = ?",
                 new String[]{String.valueOf(outdoorData.getId())});
-        db.close();
+        //db.close();
     }
 
     public int updateOutdoorData(OutdoorData outdoorData) {
@@ -253,7 +253,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Inserting Row
         db.insert(TABLE_USER_BADGES, null, values);
-        db.close(); // Closing database connection
+        //db.close(); // Closing database connection
     }
     public int updateUserBadgeData(UserBadge userBadge) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -317,7 +317,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // Inserting Row
         db.insert(TABLE_USER_TREES, null, values);
-        db.close(); // Closing database connection
+        //db.close(); // Closing database connection
     }
     public int updateUserTreeData(UserTree userTree) {
         SQLiteDatabase db = this.getWritableDatabase();
