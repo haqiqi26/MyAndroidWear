@@ -76,7 +76,7 @@ public class HomeActivity extends ActionBarActivity {
         menuDrop = new ArrayAdapter<String>(HomeActivity.this, android.R.layout.simple_spinner_item);
         userPreferences = new UserPreferences(HomeActivity.this);
         userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
-        Log.e("homePref",userPreferences.getUserPreferences(UserPreferences.KEY_APP_STATE));
+        //Log.e("homePref",userPreferences.getUserPreferences(UserPreferences.KEY_APP_STATE));
         syncInfo = (TextView) findViewById(R.id.syncInfo);
         pullInfo = (TextView) findViewById(R.id.pullInfo);
         adviceMessage = (TextView) findViewById(R.id.adviceMessage);
@@ -125,11 +125,6 @@ public class HomeActivity extends ActionBarActivity {
         swipeLayout.postDelayed(new Runnable() {
             @Override
             public void run() {
-                /*db.addOutdoorData(new OutdoorData("2015-08-07 10:15:00",181,0,0));
-                db.addOutdoorData(new OutdoorData("2015-08-09 10:15:00",181,0,0));
-                db.addOutdoorData(new OutdoorData("2015-08-10 10:15:00",181,0,0));
-                db.addOutdoorData(new OutdoorData("2015-08-11 10:15:00",181,0,0));
-*/
                 userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_RUNNING);
                 swipeLayout.setRefreshing(true);
                 doRefresh();
@@ -271,7 +266,7 @@ public class HomeActivity extends ActionBarActivity {
     protected void onDestroy() {
         super.onDestroy();
         userPreferences.setUserPreferences(UserPreferences.KEY_APP_STATE, UserPreferences.APP_NOT_RUNNING);
-        Log.e("homePref", userPreferences.getUserPreferences(UserPreferences.KEY_APP_STATE));
+        //Log.e("homePref", userPreferences.getUserPreferences(UserPreferences.KEY_APP_STATE));
         if(bluetoothDataService!=null)
             bluetoothDataService.stop();
     }

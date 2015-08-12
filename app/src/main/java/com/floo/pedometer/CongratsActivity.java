@@ -29,7 +29,7 @@ public class CongratsActivity extends ActionBarActivity {
         int GOLD=1,PLATINUM=2;
         String BADGE_TYPE = "badgeType";
         pref = new UserPreferences(CongratsActivity.this);
-        Log.e("congratsPref", pref.getUserPreferences(UserPreferences.KEY_APP_STATE));
+        //Log.e("congratsPref", pref.getUserPreferences(UserPreferences.KEY_APP_STATE));
 
 
         int x = getIntent().getExtras().getInt(BADGE_TYPE);

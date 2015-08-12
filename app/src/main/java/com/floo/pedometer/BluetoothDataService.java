@@ -437,19 +437,19 @@ public class BluetoothDataService {
                     String display = latestDate + " value: " + outdoors_y_n+" luxreading: "+luxReading;
                     if(outdoors_y_n>0)
                     {
-                        Log.e(TAG, "lastSync: "+lastSync+" date"+latestDate);
+                        Log.d(TAG, "lastSync: "+lastSync+" date"+latestDate);
                         try {
                             Date fromWatchDate = datetimeformat.parse(latestDate);
                             Date lastDate = datetimeformat.parse(lastSync);
 
                             if(fromWatchDate.before(lastDate)||latestDate.equals(lastSync))
                             {
-                                Log.e(TAG,"reject");
+                                Log.d(TAG,"reject");
                             }
                             else {
                                 OutdoorData row = new OutdoorData(latestDate,outdoors_y_n,0,luxReading);
                                 rows.add(row);
-                                Log.e(TAG, "save");
+                                Log.d(TAG, "save");
                             }
 
                         } catch (ParseException e) {
@@ -469,7 +469,7 @@ public class BluetoothDataService {
                     msg.setData(bundle);
                     handler.sendMessage(msg);
                     //Log.e("counter",counter+" "+Math.round(progress)+" "+percent+" "+diff);
-                    Log.e(TAG, "lastSync: "+lastSync+" "+display);
+                    Log.d(TAG, "lastSync: "+lastSync+" "+display);
                     id++;
 
                 }

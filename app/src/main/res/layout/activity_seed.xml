@@ -38,10 +38,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Your Growing Tree"
-                android:layout_marginTop="10dp"
                 android:textSize="20dp"
                 android:gravity="center_horizontal"
-                android:layout_below="@id/seedImage"
+                android:layout_above="@+id/text1"
+                android:textColor="@android:color/black"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/text1"
+                android:text="The tree will grow if you hit 3-hour target per day"
+                android:layout_alignParentBottom="true"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                android:gravity="center_horizontal"
                 android:textColor="@android:color/black"
                 />
         </RelativeLayout>
